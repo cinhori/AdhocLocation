@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
     private String myLatLongString;
+    private String otherLatLongStrings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,12 +22,15 @@ public class MainActivity extends AppCompatActivity {
         //get latitude and longitude:30.62, 114.13
         Log.d("latitude and longitude", myLatLongString);
 
+        otherLatLongStrings = "30.63, 114.13; 30.64, 114.12; 30.63, 114.1; 30.62, 114.15; 30.61, 114.13";
+
         Button submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent mapIntent = new Intent(MainActivity.this, MapActivity.class);
                 mapIntent.putExtra("myLatLongString", myLatLongString);
+                mapIntent.putExtra("otherLatLongStrings", otherLatLongStrings);
                 startActivity(mapIntent);
             }
         });

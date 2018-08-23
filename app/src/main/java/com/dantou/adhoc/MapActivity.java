@@ -15,13 +15,17 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.Dot;
+import com.baidu.mapapi.map.DotOptions;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MapActivity extends AppCompatActivity {
@@ -51,6 +55,20 @@ public class MapActivity extends AppCompatActivity {
         double myLatitude = Double.parseDouble(myLatLongString.split(",")[0]);
         double myLongitude = Double.parseDouble(myLatLongString.split(",")[1]);
         LatLng myLatLong = new LatLng(myLatitude, myLongitude);
+
+        List<LatLng> others = new LinkedList<>();
+
+        String otherLatLongStrings = intent.getStringExtra("otherLatLongStrings");
+        String[] otherLatLongs = otherLatLongStrings.split(";");
+        for (String o : otherLatLongs){
+            others.add(new LatLng(Double.parseDouble(o.split(",")[0]), Double.parseDouble(o.split(",")[1])));
+        }
+
+        OverlayOptions ooDot;
+        for(LatLng other : others) {
+            ooDot = new DotOptions().center(other).radius(15).color(0xAA000000);
+            baiduMap.addOverlay(ooDot);
+        }
 
         /**
          *
@@ -91,6 +109,13 @@ public class MapActivity extends AppCompatActivity {
         locationBuilder.longitude(myLatLong.longitude);
         MyLocationData locationData = locationBuilder.build();
         baiduMap.setMyLocationData(locationData);
+
+        /*for(LatLng latLng : others){
+            locationBuilder.latitude(latLng.latitude);
+            locationBuilder.longitude(latLng.longitude);
+            locationData = locationBuilder.build();
+            baiduMap.setMyLocationData(locationData);
+        }*/
 
     }
 
