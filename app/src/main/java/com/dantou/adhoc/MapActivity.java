@@ -3,6 +3,7 @@ package com.dantou.adhoc;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -66,7 +67,7 @@ public class MapActivity extends AppCompatActivity {
 
         OverlayOptions ooDot;
         for(LatLng other : others) {
-            ooDot = new DotOptions().center(other).radius(15).color(0xAA000000);
+            ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
             baiduMap.addOverlay(ooDot);
         }
 
