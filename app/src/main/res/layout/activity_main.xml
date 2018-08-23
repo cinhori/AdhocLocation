@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/latlong_editText"
+    <TextView
+        android:id="@+id/latlong_textView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="latitude and longitude"
-        android:maxLines="2"/>
+        android:layout_height="200dp"
+        android:hint="@string/latlong_hint"
+        android:maxLines="5"/>
     
     <Button
         android:id="@+id/submit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="submit"
+        android:text="@string/submit_button"
         android:textAllCaps="false"/>
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/bluetooth_dev_textView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:hint="@string/bluetooth_dev_textView_hint"
+        android:maxLines="5"/>
+
+
+
+</LinearLayout>

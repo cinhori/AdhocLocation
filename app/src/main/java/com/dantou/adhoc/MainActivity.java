@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     private String myLatLongString;
@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        EditText latlong_editText = findViewById(R.id.latlong_editText);
-        //latlong = latlong_editText.getText().toString();
+        TextView latlongTextView = findViewById(R.id.latlong_textView);
+        String message = latlongTextView.getText().toString();
         myLatLongString = "30.62, 114.13";
         //get latitude and longitude:30.62, 114.13
         Log.d("latitude and longitude", myLatLongString);
