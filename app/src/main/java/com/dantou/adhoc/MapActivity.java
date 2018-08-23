@@ -1,13 +1,13 @@
 package com.dantou.adhoc;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -28,8 +28,6 @@ public class MapActivity extends AppCompatActivity {
 
     public LocationClient locationClient;
 
-    private TextView positonTextView;
-
     private MapView mapView;
 
     private BaiduMap baiduMap;
@@ -44,13 +42,18 @@ public class MapActivity extends AppCompatActivity {
         locationClient = new LocationClient(getApplicationContext());
         locationClient.registerLocationListener(new MyLocationListener());
 
-        positonTextView = findViewById(R.id.position_textView);
         mapView = findViewById(R.id.baiduMapView);
         baiduMap = mapView.getMap();
         baiduMap.setMyLocationEnabled(true);
 
+        Intent intent = getIntent();
+        String myLatLongString = intent.getStringExtra("myLatLongString");
+        double myLatitude = Double.parseDouble(myLatLongString.split(",")[0]);
+        double myLongitude = Double.parseDouble(myLatLongString.split(",")[1]);
+        LatLng myLatLong = new LatLng(myLatitude, myLongitude);
+
         /**
-         * permission apply
+         *
          */
         List<String> permissionList = new ArrayList<>();
         if(ContextCompat.checkSelfPermission(MapActivity.this,
@@ -76,17 +79,16 @@ public class MapActivity extends AppCompatActivity {
         }
 
         if(isFirstLocate){
-            MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(13.0f);
+            MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
             baiduMap.animateMapStatus(update);
 
-            LatLng ll = new LatLng(30.62, 114.13);
-            update = MapStatusUpdateFactory.newLatLng(ll);
+            update = MapStatusUpdateFactory.newLatLng(myLatLong);
             baiduMap.animateMapStatus(update);
         }
 
         MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
-        locationBuilder.latitude(30.62f);
-        locationBuilder.longitude(114.13f);
+        locationBuilder.latitude(myLatLong.latitude);
+        locationBuilder.longitude(myLatLong.longitude);
         MyLocationData locationData = locationBuilder.build();
         baiduMap.setMyLocationData(locationData);
 
@@ -136,7 +138,6 @@ public class MapActivity extends AppCompatActivity {
             }else if(bdLocation.getLocType() == BDLocation.TypeGpsLocation) {
                 currentPosition.append("GPS");
             }
-            positonTextView.setText(currentPosition);
         }
     }
 
