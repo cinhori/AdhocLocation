@@ -12,6 +12,9 @@ public class MainActivity extends AppCompatActivity {
     private String myLatLongString;
     private String otherLatLongStrings;
 
+    public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
+    public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -3,4 +3,16 @@
     <string name="latlong_hint">latitude and longitude</string>
     <string name="submit_button">submit</string>
     <string name="bluetooth_dev_textView_hint">正在搜索蓝牙设备。。。</string>
+    <string name="title_devices">AdhocLocation</string>
+    <string name="ble_not_supported">本设备不支持BLE</string>
+    <string name="ble_need_location">BLE需要位置信息</string>
+    <string name="error_bluetooth_not_supported">本设备不支持BLE</string>
+
+    <string name="menu_scan">扫描</string>
+    <string name="menu_stop">停止</string>
+
+    <string name="unknown_device">未知设备</string>
+
+    <string name="menu_connect">连接</string>
+    <string name="menu_disconnect">断开</string>
 </resources>
