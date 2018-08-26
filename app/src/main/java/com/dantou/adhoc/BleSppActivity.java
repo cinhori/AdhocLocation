@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -38,7 +39,7 @@ import java.util.TimerTask;
  * communicates with {@code BluetoothLeService}, which in turn interacts with the
  * Bluetooth LE API.
  */
-public class BleSppActivity extends Activity implements View.OnClickListener {
+public class BleSppActivity extends AppCompatActivity implements View.OnClickListener {
     private final static String TAG = BleSppActivity.class.getSimpleName();
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
@@ -477,7 +478,7 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
                 break;*/
 
             case R.id.show_map:
-                Log.e("显示map按钮", "show map");
+                Log.v("显示map按钮", "show map");
                 Intent mapIntent = new Intent(BleSppActivity.this, MainActivity.class);
                 startActivity(mapIntent);
                 break;
