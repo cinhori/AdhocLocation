@@ -22,7 +22,7 @@
     <string name="receive_byte">接收</string>
     <string name="zero">0</string>
     <string name="speed">0 B/s</string>
-    <string name="data_format_default">Ascii</string>
+    <string name="data_format_default">Hex</string>
     <string name="clean">清除</string>
     <string name="data_format_hex">Hex</string>
 </resources>

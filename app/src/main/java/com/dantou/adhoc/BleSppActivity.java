@@ -345,7 +345,7 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
         return buf;
     }
 
-    public String asciiToString(byte[] bytes) {
+    /*public String asciiToString(byte[] bytes) {
         char[] buf = new char[bytes.length];
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < buf.length; i++) {
@@ -353,7 +353,7 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
             sb.append(buf[i]);
         }
         return sb.toString();
-    }
+    }*/
 
     public String bytesToString(byte[] bytes) {
         final char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -417,10 +417,14 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
             mData.delete(0,mData.length()/2); //UI界面只保留512个字节，免得APP卡顿
         }
 
-        if (mDataRecvFormat.getText().equals("Ascii")) {
+        /*if (mDataRecvFormat.getText().equals("Ascii")) {
             String s =asciiToString(buf);
             mData.append(s);
         } else {
+            String s = bytesToString(buf);
+            mData.append(s);
+        }*/
+        if (mDataRecvFormat.getText().equals("Hex")){
             String s = bytesToString(buf);
             mData.append(s);
         }
@@ -431,13 +435,13 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.data_received_format:
+            /*case R.id.data_received_format:
                 if (mDataRecvFormat.getText().equals(getResources().getString(R.string.data_format_default))) {
                     convertText(mDataRecvFormat, R.string.data_format_hex);
                 } else {
                   convertText(mDataRecvFormat,R.string.data_format_default);
                 }
-                break;
+                break;*/
 
             /*case R.id.data_sended_format:
                 if (mDataSendFormat.getText().equals(getResources().getString(R.string.data_format_default)))  {
