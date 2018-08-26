@@ -8,7 +8,6 @@
     <item name="data_read_text" type="id"/>
     <item name="device_name" type="id"/>
     <item name="device_address" type="id"/>
-    <item name="notify_speed_text" type="id"/>
     <item name="show_map" type="id" />
 
 </resources>

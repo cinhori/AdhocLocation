@@ -59,8 +59,8 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
     private TextView mDataRecvText;
     private TextView mRecvBytes;
     private TextView mDataRecvFormat;
-    private TextView mNotify_speed_text;
-    /*private EditText mEditBox;
+    /*private TextView mNotify_speed_text;
+    private EditText mEditBox;
     private TextView mSendBytes;
     private TextView mDataSendFormat;
 */
@@ -74,8 +74,8 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
     byte[] sendBuf;*/
 
     //测速
-    private Timer timer;
-    private TimerTask task;
+    /*private Timer timer;
+    private TimerTask task;*/
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -159,7 +159,7 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
         mDataRecvText = (TextView) findViewById(R.id.data_read_text);
         mRecvBytes = (TextView) findViewById(R.id.byte_received_text);
         mDataRecvFormat = (TextView) findViewById(R.id.data_received_format);
-        mNotify_speed_text = (TextView) findViewById(R.id.notify_speed_text);
+        /*mNotify_speed_text = (TextView) findViewById(R.id.notify_speed_text);*/
         Button mCleanBtn = (Button) findViewById(R.id.clean_data_btn);
         Button mShow = findViewById(R.id.show_map);
 
@@ -182,7 +182,7 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
         mData = new StringBuilder();
 
         final int SPEED = 1;
-        final Handler handler = new Handler() {
+        /*final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
@@ -193,9 +193,9 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
                         break;
                 }
             }
-        };
+        };*/
 
-        task = new TimerTask() {
+        /*task = new TimerTask() {
             @Override
             public void run() {
                 Message message = new Message();
@@ -203,13 +203,13 @@ public class BleSppActivity extends Activity implements View.OnClickListener {
                 message.obj = System.currentTimeMillis();
                 handler.sendMessage(message);
             }
-        };
+        };*/
 
-        timer = new Timer();
+        /*timer = new Timer();
         // 参数：
         // 1000，延时1秒后执行。
         // 1000，每隔2秒执行1次task。
-        timer.schedule(task, 1000, 1000);
+        timer.schedule(task, 1000, 1000);*/
 
         //getActionBar().setTitle(mDeviceName);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
