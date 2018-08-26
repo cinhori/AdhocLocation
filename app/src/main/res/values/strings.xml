@@ -15,4 +15,14 @@
 
     <string name="menu_connect">连接</string>
     <string name="menu_disconnect">断开</string>
+
+    <string name="disconnected">无法连接</string>
+    <string name="connected">连接成功</string>
+
+    <string name="receive_byte">接收</string>
+    <string name="zero">0</string>
+    <string name="speed">0 B/s</string>
+    <string name="data_format_default">Ascii</string>
+    <string name="clean">清除</string>
+    <string name="data_format_hex">Hex</string>
 </resources>

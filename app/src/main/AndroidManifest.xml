@@ -44,11 +44,14 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".MapActivity" />
+        <activity android:name=".BleSppActivity" />
 
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
+
+        <service android:name="com.dantou.adhoc.BluetoothLeService" android:enabled="true"/>
 
     </application>
 
