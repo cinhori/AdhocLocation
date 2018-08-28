@@ -59,7 +59,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
     private TextView mDataRecvText;
     private TextView mRecvBytes;
-    private TextView mDataRecvFormat;
     /*private TextView mNotify_speed_text;
     private EditText mEditBox;
     private TextView mSendBytes;
@@ -159,7 +158,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
         mDataRecvText = (TextView) findViewById(R.id.data_read_text);
         mRecvBytes = (TextView) findViewById(R.id.byte_received_text);
-        mDataRecvFormat = (TextView) findViewById(R.id.data_received_format);
         /*mNotify_speed_text = (TextView) findViewById(R.id.notify_speed_text);*/
         Button mCleanBtn = (Button) findViewById(R.id.clean_data_btn);
         Button mShow = findViewById(R.id.show_map);
@@ -170,7 +168,9 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         Button mSendBtn = (Button) findViewById(R.id.send_data_btn);
         Button mCleanTextBtn = (Button) findViewById(R.id.clean_text_btn);*/
 
+/*
         mDataRecvFormat.setOnClickListener(this);
+*/
         mRecvBytes.setOnClickListener(this);
         /*mDataSendFormat.setOnClickListener(this);
         mSendBytes.setOnClickListener(this);*/
@@ -418,18 +418,9 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             mData.delete(0,mData.length()/2); //UI界面只保留512个字节，免得APP卡顿
         }
 
-        /*if (mDataRecvFormat.getText().equals("Ascii")) {
-            String s =asciiToString(buf);
-            mData.append(s);
-        } else {
-            String s = bytesToString(buf);
-            mData.append(s);
-        }*/
-        if (mDataRecvFormat.getText().equals("Hex")){
-            String s = bytesToString(buf);
-            //mData.append("\n");
-            mData.append(s);
-        }
+        String s = bytesToString(buf);
+        mData.append(s);
+
         mDataRecvText.setText(mData.toString());
         mRecvBytes.setText(recvBytes + " ");
     }

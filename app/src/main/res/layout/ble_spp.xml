@@ -57,13 +57,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4" />
 
-            <TextView
-                android:id="@id/data_received_format"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/data_format_default"
-                android:textSize="@dimen/small_text_size" />
-
             <Button
                 android:id="@id/clean_data_btn"
                 android:layout_width="wrap_content"
