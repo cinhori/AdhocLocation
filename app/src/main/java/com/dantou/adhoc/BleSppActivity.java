@@ -27,6 +27,9 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
+import com.dantou.model.Point;
+import com.dantou.util.StringToLatLong;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +58,10 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
     //private final String LIST_NAME = "NAME";
     //private final String LIST_UUID = "UUID";
+
+    private Point myPoint;
+    private ArrayList<Point> otherPoints = new ArrayList<>();
+    private ArrayList<Point> points;
 
 
     private TextView mDataRecvText;
@@ -212,6 +219,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
     }
 
     @Override
@@ -416,6 +424,16 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         mData.append(s);
 
         mDataRecvText.setText(mData.toString());
+
+        points =  StringToLatLong.toLatLongs(mData.toString());
+
+        for(Point p : points){
+            if(p.getId() == 1){
+                myPoint = p;
+            }else{
+                otherPoints.add(p);
+            }
+        }
     }
 
     @Override
@@ -453,8 +471,9 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.show_map:
                 Log.v("显示map按钮", "show map");
-                Intent mapIntent = new Intent(BleSppActivity.this, MainActivity.class);
-                mapIntent.putExtra("data", mData.toString());
+                Intent mapIntent = new Intent(BleSppActivity.this, MapActivity.class);
+                mapIntent.putExtra("myPoint", myPoint);
+                mapIntent.putParcelableArrayListExtra("otherPoints", otherPoints);
                 startActivity(mapIntent);
                 break;
 
