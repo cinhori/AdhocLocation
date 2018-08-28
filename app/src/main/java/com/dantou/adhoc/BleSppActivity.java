@@ -427,6 +427,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         }*/
         if (mDataRecvFormat.getText().equals("Hex")){
             String s = bytesToString(buf);
+            //mData.append("\n");
             mData.append(s);
         }
         mDataRecvText.setText(mData.toString());
@@ -480,6 +481,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.show_map:
                 Log.v("显示map按钮", "show map");
                 Intent mapIntent = new Intent(BleSppActivity.this, MainActivity.class);
+                mapIntent.putExtra("data", mData.toString());
                 startActivity(mapIntent);
                 break;
 

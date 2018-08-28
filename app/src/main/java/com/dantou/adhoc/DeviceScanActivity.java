@@ -87,7 +87,7 @@ public class DeviceScanActivity extends ListActivity {
             return;
         }
 
-        //andoird 6.0需要开启定位请求
+        //android 6.0需要开启定位请求
         mayRequestLocation();
     }
 

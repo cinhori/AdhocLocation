@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dantou.model.Point;
+
 public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;
@@ -48,40 +50,53 @@ public class MapActivity extends AppCompatActivity {
 
         getPermission();
 
-        //解析当前节点的经纬度
         Intent intent = getIntent();
-        String myLatLongString = intent.getStringExtra("myLatLongString");
-        LatLng myLatLong = stringToLatLng(myLatLongString);
+        //解析当前节点的经纬度
+        //String myLatLongString = intent.getStringExtra("myLatLongString");
+        //LatLng myLatLong = stringToLatLng(myLatLongString);
+        Point myPoint = intent.getParcelableExtra("myPoint");
 
-        if(isFirstLocate){
-            MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
-            baiduMap.animateMapStatus(update);
+        if(myPoint != null){
 
-            update = MapStatusUpdateFactory.newLatLng(myLatLong);
-            baiduMap.animateMapStatus(update);
+            LatLng myLatLong = new LatLng(myPoint.getLatitude(), myPoint.getLongitude());
+
+            if(isFirstLocate){
+                MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
+                baiduMap.animateMapStatus(update);
+
+                update = MapStatusUpdateFactory.newLatLng(myLatLong);
+                baiduMap.animateMapStatus(update);
+            }
+
+            //将当前节点显示在地图上
+            MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
+            locationBuilder.latitude(myLatLong.latitude);
+            locationBuilder.longitude(myLatLong.longitude);
+            MyLocationData locationData = locationBuilder.build();
+            baiduMap.setMyLocationData(locationData);
         }
 
-        //将当前节点显示在地图上
-        MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
-        locationBuilder.latitude(myLatLong.latitude);
-        locationBuilder.longitude(myLatLong.longitude);
-        MyLocationData locationData = locationBuilder.build();
-        baiduMap.setMyLocationData(locationData);
-
         //解析其他节点的经纬度
-        List<LatLng> others = new LinkedList<>();
+        /*List<LatLng> others = new LinkedList<>();
         String otherLatLongStrings = intent.getStringExtra("otherLatLongStrings");
         String[] otherLatLongs = otherLatLongStrings.split(";");
         for (String o : otherLatLongs){
             others.add(stringToLatLng(o));
+        }*/
+        ArrayList<Point> otherPoints = intent.getParcelableArrayListExtra("otherPoints");
+        List<LatLng> others = new LinkedList<>();
+        if(otherPoints != null){
+            for(Point p : otherPoints){
+                others.add(new LatLng(p.getLatitude(), p.getLongitude()));
+            }
+            //将其他节点显示在地图上
+            OverlayOptions ooDot;
+            for(LatLng other : others) {
+                ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
+                baiduMap.addOverlay(ooDot);
+            }
         }
 
-        //将其他节点显示在地图上
-        OverlayOptions ooDot;
-        for(LatLng other : others) {
-            ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
-            baiduMap.addOverlay(ooDot);
-        }
 
     }
 
