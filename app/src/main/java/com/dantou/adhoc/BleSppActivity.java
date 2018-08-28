@@ -58,7 +58,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private TextView mDataRecvText;
-    private TextView mRecvBytes;
     /*private TextView mNotify_speed_text;
     private EditText mEditBox;
     private TextView mSendBytes;
@@ -157,7 +156,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
         mDataRecvText = (TextView) findViewById(R.id.data_read_text);
-        mRecvBytes = (TextView) findViewById(R.id.byte_received_text);
         /*mNotify_speed_text = (TextView) findViewById(R.id.notify_speed_text);*/
         Button mShow = findViewById(R.id.show_map);
 
@@ -170,7 +168,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 /*
         mDataRecvFormat.setOnClickListener(this);
 */
-        mRecvBytes.setOnClickListener(this);
         /*mDataSendFormat.setOnClickListener(this);
         mSendBytes.setOnClickListener(this);*/
         mShow.setOnClickListener(this);
@@ -420,7 +417,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         mData.append(s);
 
         mDataRecvText.setText(mData.toString());
-        mRecvBytes.setText(recvBytes + " ");
     }
 
     @Override
@@ -441,12 +437,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
                     convertText(mDataSendFormat, R.string.data_format_default);
                 }
                 break;*/
-
-            case R.id.byte_received_text:
-                recvBytes = 0;
-                lastSecondBytes=0;
-                convertText(mRecvBytes, R.string.zero);
-                break;
 
             /*case R.id.byte_send_text:
                 sendBytes = 0;

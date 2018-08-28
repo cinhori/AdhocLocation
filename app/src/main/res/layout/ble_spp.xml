@@ -33,20 +33,6 @@
             android:layout_marginTop="@dimen/view_normal_margin"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/receive_byte"
-                android:textSize="@dimen/small_text_size" />
-
-            <TextView
-                android:id="@id/byte_received_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/view_small_margin"
-                android:text="@string/zero"
-                android:textSize="@dimen/small_text_size" />
-
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
