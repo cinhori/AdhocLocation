@@ -237,7 +237,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         mBluetoothLeService = null;
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.gatt_services, menu);
         if (mConnected) {
@@ -248,9 +248,9 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             menu.findItem(R.id.menu_disconnect).setVisible(false);
         }
         return true;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_connect:
@@ -265,7 +265,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     private void updateConnectionState(final int resourceId) {
         runOnUiThread(new Runnable() {
