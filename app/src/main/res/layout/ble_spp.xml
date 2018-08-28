@@ -58,15 +58,6 @@
                 android:layout_weight="0.4" />
 
             <Button
-                android:id="@id/clean_data_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginLeft="15dp"
-                android:gravity="center"
-                android:text="@string/clean"
-                android:textSize="@dimen/small_text_size" />
-
-            <Button
                 android:id="@id/show_map"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"

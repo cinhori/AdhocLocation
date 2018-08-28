@@ -159,7 +159,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         mDataRecvText = (TextView) findViewById(R.id.data_read_text);
         mRecvBytes = (TextView) findViewById(R.id.byte_received_text);
         /*mNotify_speed_text = (TextView) findViewById(R.id.notify_speed_text);*/
-        Button mCleanBtn = (Button) findViewById(R.id.clean_data_btn);
         Button mShow = findViewById(R.id.show_map);
 
         /*mEditBox = (EditText) findViewById(R.id.data_edit_box);
@@ -174,7 +173,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         mRecvBytes.setOnClickListener(this);
         /*mDataSendFormat.setOnClickListener(this);
         mSendBytes.setOnClickListener(this);*/
-        mCleanBtn.setOnClickListener(this);
         mShow.setOnClickListener(this);
 
         /*mSendBtn.setOnClickListener(this);
@@ -459,11 +457,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
                 getSendBuf();
                 onSendBtnClicked();
                 break;*/
-
-            case R.id.clean_data_btn:
-                mData.delete(0, mData.length());
-                mDataRecvText.setText(mData.toString());
-                break;
 
             /*case R.id.clean_text_btn:
                 mEditBox.setText("");
