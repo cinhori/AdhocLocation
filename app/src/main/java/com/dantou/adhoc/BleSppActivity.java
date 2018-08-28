@@ -54,24 +54,24 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
     //private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
-    private boolean mConnected = false;
+    //private boolean mConnected = false;
 
     //private final String LIST_NAME = "NAME";
     //private final String LIST_UUID = "UUID";
 
     private Point myPoint;
     private ArrayList<Point> otherPoints = new ArrayList<>();
-    private ArrayList<Point> points;
+    //private ArrayList<Point> points;
 
 
-    private TextView mDataRecvText;
-    /*private TextView mNotify_speed_text;
+    /*private TextView mDataRecvText;
+    private TextView mNotify_speed_text;
     private EditText mEditBox;
     private TextView mSendBytes;
     private TextView mDataSendFormat;
-*/
+
     private long recvBytes = 0;
-    private long lastSecondBytes = 0;
+    private long lastSecondBytes = 0;*/
     private StringBuilder mData;
 
     /*private long sendBytes;
@@ -116,15 +116,15 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
 
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
+                /*mConnected = false;
                 updateConnectionState(R.string.disconnected);
-                invalidateOptionsMenu();
+                invalidateOptionsMenu();*/
                 mBluetoothLeService.connect(mDeviceAddress);
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                //特征值找到才代表连接成功
+                /*//特征值找到才代表连接成功
                 mConnected = true;
                 invalidateOptionsMenu();
-                updateConnectionState(R.string.connected);
+                updateConnectionState(R.string.connected);*/
             }else if (BluetoothLeService.ACTION_GATT_SERVICES_NO_DISCOVERED.equals(action)){
                 mBluetoothLeService.connect(mDeviceAddress);
             }else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
@@ -162,7 +162,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
-        mDataRecvText = (TextView) findViewById(R.id.data_read_text);
+        //mDataRecvText = (TextView) findViewById(R.id.data_read_text);
         /*mNotify_speed_text = (TextView) findViewById(R.id.notify_speed_text);*/
         Button mShow = findViewById(R.id.show_map);
 
@@ -181,7 +181,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
         /*mSendBtn.setOnClickListener(this);
         mCleanTextBtn.setOnClickListener(this);*/
-        mDataRecvText.setMovementMethod(ScrollingMovementMethod.getInstance());
+        //mDataRecvText.setMovementMethod(ScrollingMovementMethod.getInstance());
         mData = new StringBuilder();
 
         final int SPEED = 1;
@@ -295,7 +295,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         return intentFilter;
     }
 
-    //动态效果
+    /*//动态效果
     public void convertText(final TextView textView, final int convertTextId) {
         final Animation scaleIn = AnimationUtils.loadAnimation(this,
                 R.anim.text_scale_in);
@@ -317,7 +317,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
         textView.startAnimation(scaleOut);
-    }
+    }*/
 
     //获取输入框十六进制格式
     /*private String getHexString() {
@@ -337,7 +337,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
     }*/
 
 
-    private byte[] stringToBytes(String s) {
+    /*private byte[] stringToBytes(String s) {
         byte[] buf = new byte[s.length() / 2];
         for (int i = 0; i < buf.length; i++) {
             try {
@@ -347,7 +347,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
         return buf;
-    }
+    }*/
 
     /*public String asciiToString(byte[] bytes) {
         char[] buf = new char[bytes.length];
@@ -411,7 +411,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
     }*/
 
     private void displayData(byte[] buf) {
-        recvBytes += buf.length;
+        //recvBytes += buf.length;
         recv_cnt += buf.length;
 
         if (recv_cnt >= 1024)
@@ -423,9 +423,11 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         String s = bytesToString(buf);
         mData.append(s);
 
-        mDataRecvText.setText(mData.toString());
+        //mDataRecvText.setText(mData.toString());
 
-        points =  StringToLatLong.toLatLongs(mData.toString());
+        cut(mData);
+
+        /*points =  StringToLatLong.toLatLongs(mData.toString());
 
         for(Point p : points){
             if(p.getId() == 1){
@@ -433,7 +435,29 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             }else{
                 otherPoints.add(p);
             }
+        }*/
+    }
+
+    private StringBuilder cut(StringBuilder sb){
+        while (sb.toString().startsWith("050082") && sb.length() >= 48){
+            String tempString = sb.substring(0, 48);
+            Log.d("剪切的完整节点串", tempString);
+            Point tempPoint = StringToLatLong.toLatLong(tempString);
+            Log.d("剪切的节点", tempPoint.toString());
+
+            if (tempPoint.getId() == 1){
+                myPoint = tempPoint;
+            }else {
+                otherPoints.add(tempPoint);
+            }
+
+            tempString = sb.delete(0, 48).toString();
+            Log.d("剪掉的16进制串", tempPoint.toString());
+
         }
+
+        return sb;
+
     }
 
     @Override

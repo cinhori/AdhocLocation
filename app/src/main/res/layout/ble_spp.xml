@@ -11,6 +11,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".BleSppActivity">
 
+    <!--<com.baidu.mapapi.map.MapView
+        android:id="@+id/baiduMapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -54,6 +60,15 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </LinearLayout>-->
+
+    <Button
+        android:id="@id/show_map"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center"
+        android:text="显示"
+        android:textSize="@dimen/small_text_size" />
 
 </LinearLayout>
