@@ -1,5 +1,6 @@
 package com.dantou.adhoc;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -9,10 +10,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -26,12 +32,23 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.DotOptions;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.model.LatLng;
 import com.dantou.model.Point;
 import com.dantou.util.StringToLatLong;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,13 +59,19 @@ import java.util.TimerTask;
  * communicates with {@code BluetoothLeService}, which in turn interacts with the
  * Bluetooth LE API.
  */
-public class BleSppActivity extends AppCompatActivity implements View.OnClickListener {
+//public class BleSppActivity extends AppCompatActivity implements View.OnClickListener {//
+public class BleSppActivity extends AppCompatActivity {
     private final static String TAG = BleSppActivity.class.getSimpleName();
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     static long recv_cnt = 0;
+
+    private MapView mapView;
+
+    private BaiduMap baiduMap;
+    private boolean isFirstLocate = true;
 
     private String mDeviceName;
     private String mDeviceAddress;
@@ -155,7 +178,14 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        // setContentView(R.layout.gatt_services_characteristics);
+        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.ble_spp);
+
+        mapView = findViewById(R.id.baiduMapView);
+        baiduMap = mapView.getMap();
+        baiduMap.setMyLocationEnabled(true);
+
+        getPermission();
 
         //获取蓝牙的名字和地址
         final Intent intent = getIntent();
@@ -177,7 +207,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 */
         /*mDataSendFormat.setOnClickListener(this);
         mSendBytes.setOnClickListener(this);*/
-        mShow.setOnClickListener(this);
+        //mShow.setOnClickListener(this);
 
         /*mSendBtn.setOnClickListener(this);
         mCleanTextBtn.setOnClickListener(this);*/
@@ -230,12 +260,15 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }
+
+        mapView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mGattUpdateReceiver);
+        mapView.onPause();
     }
 
     @Override
@@ -243,6 +276,9 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         super.onDestroy();
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
+
+        mapView.onDestroy();
+        baiduMap.setMyLocationEnabled(false);
     }
 
     /*@Override
@@ -414,11 +450,11 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         //recvBytes += buf.length;
         recv_cnt += buf.length;
 
-        if (recv_cnt >= 1024)
+        /*if (recv_cnt >= 1024)
         {
             recv_cnt = 0;
             mData.delete(0,mData.length()/2); //UI界面只保留512个字节，免得APP卡顿
-        }
+        }*/
 
         String s = bytesToString(buf);
         mData.append(s);
@@ -436,6 +472,39 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
                 otherPoints.add(p);
             }
         }*/
+
+        if(myPoint != null){
+
+            LatLng myLatLong = new LatLng(myPoint.getLatitude(), myPoint.getLongitude());
+
+            if(isFirstLocate){
+                MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
+                baiduMap.animateMapStatus(update);
+
+                update = MapStatusUpdateFactory.newLatLng(myLatLong);
+                baiduMap.animateMapStatus(update);
+            }
+
+            //将当前节点显示在地图上
+            MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
+            locationBuilder.latitude(myLatLong.latitude);
+            locationBuilder.longitude(myLatLong.longitude);
+            MyLocationData locationData = locationBuilder.build();
+            baiduMap.setMyLocationData(locationData);
+        }
+
+        List<LatLng> others = new LinkedList<>();
+        if(otherPoints != null){
+            for(Point p : otherPoints){
+                others.add(new LatLng(p.getLatitude(), p.getLongitude()));
+            }
+            //将其他节点显示在地图上
+            OverlayOptions ooDot;
+            for(LatLng other : others) {
+                ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
+                baiduMap.addOverlay(ooDot);
+            }
+        }
     }
 
     private StringBuilder cut(StringBuilder sb){
@@ -460,38 +529,38 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    @Override
+    /*@Override
     public void onClick(View v) {
         switch (v.getId()) {
-            /*case R.id.data_received_format:
+            *//*case R.id.data_received_format:
                 if (mDataRecvFormat.getText().equals(getResources().getString(R.string.data_format_default))) {
                     convertText(mDataRecvFormat, R.string.data_format_hex);
                 } else {
                   convertText(mDataRecvFormat,R.string.data_format_default);
                 }
-                break;*/
+                break;*//*
 
-            /*case R.id.data_sended_format:
+            *//*case R.id.data_sended_format:
                 if (mDataSendFormat.getText().equals(getResources().getString(R.string.data_format_default)))  {
                     convertText(mDataSendFormat, R.string.data_format_hex);
                 } else {
                     convertText(mDataSendFormat, R.string.data_format_default);
                 }
-                break;*/
+                break;*//*
 
-            /*case R.id.byte_send_text:
+            *//*case R.id.byte_send_text:
                 sendBytes = 0;
                 convertText(mSendBytes, R.string.zero);
-                break;*/
+                break;*//*
 
-            /*case R.id.send_data_btn:
+            *//*case R.id.send_data_btn:
                 getSendBuf();
                 onSendBtnClicked();
-                break;*/
+                break;*//*
 
-            /*case R.id.clean_text_btn:
+            *//*case R.id.clean_text_btn:
                 mEditBox.setText("");
-                break;*/
+                break;*//*
 
             case R.id.show_map:
                 Log.v("显示map按钮", "show map");
@@ -503,6 +572,51 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
             default:
                 break;
+        }
+    }*/
+
+    private void getPermission(){
+        List<String> permissionList = new ArrayList<>();
+        if(ContextCompat.checkSelfPermission(BleSppActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+        if(ContextCompat.checkSelfPermission(BleSppActivity.this,
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+        }
+
+        if(ContextCompat.checkSelfPermission(BleSppActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if(!permissionList.isEmpty()){
+            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
+            ActivityCompat.requestPermissions(BleSppActivity.this, permissions, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 1:
+                if (grantResults.length > 0) {
+                    for (int result : grantResults) {
+                        if (result != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(this, "you must agree all the previleges",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                            return;
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Unknown Error", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+            default:
         }
     }
 }
