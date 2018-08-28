@@ -63,8 +63,8 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
     private TextView mSendBytes;
     private TextView mDataSendFormat;
 */
-    private long recvBytes=0;
-    private long lastSecondBytes=0;
+    private long recvBytes = 0;
+    private long lastSecondBytes = 0;
     private StringBuilder mData;
 
     /*private long sendBytes;
@@ -362,7 +362,6 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
 
             sb.append(hexChars[i * 2]);
             sb.append(hexChars[i * 2 + 1]);
-            sb.append(' ');
         }
         return sb.toString();
     }
@@ -407,7 +406,7 @@ public class BleSppActivity extends AppCompatActivity implements View.OnClickLis
         recvBytes += buf.length;
         recv_cnt += buf.length;
 
-        if (recv_cnt>=1024)
+        if (recv_cnt >= 1024)
         {
             recv_cnt = 0;
             mData.delete(0,mData.length()/2); //UI界面只保留512个字节，免得APP卡顿
