@@ -45,6 +45,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.dantou.model.Point;
 import com.dantou.util.StringToLatLong;
+import com.dantou.util.XorVerification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -524,6 +525,17 @@ public class BleSppActivity extends AppCompatActivity {
         while (sb.toString().startsWith("050082") && sb.length() >= 48){
             String tempString = sb.substring(0, 48);
             Log.d("剪切的完整节点串", tempString);
+
+            String checkSum = XorVerification.getChecksum(tempString.substring(0, tempString.length()-2));
+            Log.d("计算出的校验和", checkSum);
+            String rightCS = tempString.substring(tempString.length()-2, tempString.length());
+            Log.d("正确的的校验和", rightCS);
+            if(!checkSum.equalsIgnoreCase(rightCS)) {
+                Log.d("校验和结果", "错误，直接丢弃");
+                sb = sb.delete(0, 48);
+                continue;
+            }
+
             Point tempPoint = StringToLatLong.toLatLong(tempString);
             Log.d("剪切的节点", tempPoint.toString());
 
