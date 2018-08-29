@@ -23,7 +23,8 @@ public class XorVerification {
             }
         }
         //Log.d("Checksum", code);
-        return code;
+        if (code.length() == 1) return "0" + code;
+        else return code;
     }
 
     private static String xor(String strHex_X,String strHex_Y){
@@ -57,7 +58,7 @@ public class XorVerification {
 
 
     public static void main(String[] args){
-        String s = "050082130001000F0100AE400C002EC22712081B130538";
+        String s = "05008213000F7B0F0100AE4049002EC29B12081D0E2212";
         //String s = "1312f70f900168d900007df57b4884";
         String checkSum = getChecksum(s);
         System.out.println(checkSum);

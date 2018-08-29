@@ -554,7 +554,7 @@ public class BleSppActivity extends AppCompatActivity {
                         p.setLongitude(tempPoint.getLongitude());
                         p.setDate(tempPoint.getDate());
                         tempPoint = null;
-                        continue;
+                        break;
                     }
                 }
                 if (tempPoint != null) otherPoints.add(tempPoint);
