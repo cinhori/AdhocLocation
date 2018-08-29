@@ -486,6 +486,8 @@ public class BleSppActivity extends AppCompatActivity {
                 baiduMap.animateMapStatus(update);
             }
 
+            baiduMap.clear();
+
             //将当前节点显示在地图上
             MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
             locationBuilder.latitude(myLatLong.latitude);
@@ -497,6 +499,7 @@ public class BleSppActivity extends AppCompatActivity {
         List<LatLng> others = new LinkedList<>();
         if(otherPoints != null){
             for(Point p : otherPoints){
+
                 others.add(new LatLng(p.getLatitude(), p.getLongitude()));
             }
             //将其他节点显示在地图上
@@ -542,7 +545,19 @@ public class BleSppActivity extends AppCompatActivity {
             if (tempPoint.getId() == 1){
                 myPoint = tempPoint;
             }else {
-                otherPoints.add(tempPoint);
+                for (Point p : otherPoints){
+                    if (p.getId() == tempPoint.getId()){
+                        Log.e("发现重复节点", "更新原节点位置");
+                        Log.d("原节点信息", p.toString());
+                        Log.d("现节点信息", tempPoint.toString());
+                        p.setLatitude(tempPoint.getLatitude());
+                        p.setLongitude(tempPoint.getLongitude());
+                        p.setDate(tempPoint.getDate());
+                        tempPoint = null;
+                        continue;
+                    }
+                }
+                if (tempPoint != null) otherPoints.add(tempPoint);
             }
 
             sb = sb.delete(0, 48);
