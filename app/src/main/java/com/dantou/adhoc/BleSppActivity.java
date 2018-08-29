@@ -508,6 +508,19 @@ public class BleSppActivity extends AppCompatActivity {
     }
 
     private StringBuilder cut(StringBuilder sb){
+
+        //剪去字符串头部乱码
+        if(sb.length() > 0 && !sb.toString().startsWith("050082")){
+            int location = sb.toString().indexOf("050082");
+            if (location == -1) {
+                return sb.delete(0, sb.length());
+            }else {
+                sb = sb.delete(0, sb.toString().indexOf("050082"));
+            }
+
+            Log.e("删除头部噪音字符串后", sb.toString());
+        }
+
         while (sb.toString().startsWith("050082") && sb.length() >= 48){
             String tempString = sb.substring(0, 48);
             Log.d("剪切的完整节点串", tempString);
@@ -520,8 +533,20 @@ public class BleSppActivity extends AppCompatActivity {
                 otherPoints.add(tempPoint);
             }
 
-            tempString = sb.delete(0, 48).toString();
-            Log.d("剪掉的16进制串", tempPoint.toString());
+            sb = sb.delete(0, 48);
+            Log.e("剩余的16进制串", sb.toString());
+
+            //剪去字符串尾部乱码
+            if(sb.length() > 0 && !sb.toString().startsWith("050082")){
+                int location = sb.toString().indexOf("050082");
+                if (location == -1) {
+                    return sb.delete(0, sb.length());
+                }else {
+                    sb = sb.delete(0, sb.toString().indexOf("050082"));
+                }
+
+                Log.e("删除尾部噪音字符串后", sb.toString());
+            }
 
         }
 

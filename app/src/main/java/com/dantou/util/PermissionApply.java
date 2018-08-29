@@ -1,4 +1,4 @@
-package com.dantou.adhoc;
+package com.dantou.util;
 
 public class PermissionApply {
 }
