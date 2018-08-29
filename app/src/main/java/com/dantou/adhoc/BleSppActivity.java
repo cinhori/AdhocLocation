@@ -484,6 +484,8 @@ public class BleSppActivity extends AppCompatActivity {
 
                 update = MapStatusUpdateFactory.newLatLng(myLatLong);
                 baiduMap.animateMapStatus(update);
+
+                isFirstLocate = false;
             }
 
             baiduMap.clear();
