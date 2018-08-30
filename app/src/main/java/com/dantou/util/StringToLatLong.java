@@ -2,21 +2,24 @@ package com.dantou.util;
 
 import android.util.Log;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.dantou.model.Point;
 
 public class StringToLatLong {
     public static Point toLatLong(String llString){
+
+        DecimalFormat decimalFormat = new DecimalFormat("0.00000");
+
         if (llString.startsWith("050082")){
 
             int id  = Integer.valueOf(llString.substring(8, 12), 16);
-            //System.out.println("id:" + id);
 
             double longitude = Integer.valueOf(llString.substring(18, 26), 16) * 0.00001;
-            //System.out.println("longitude:" + longitude);
+            longitude = Double.parseDouble(decimalFormat.format(longitude));
 
             double latitude = Integer.valueOf(llString.substring(26, 34), 16) * 0.00001;
-            //System.out.println("latitude:" + latitude);
+            latitude = Double.parseDouble(decimalFormat.format(latitude));
 
             return new Point(id, latitude, longitude, null);
         }
@@ -24,15 +27,7 @@ public class StringToLatLong {
     }
 
     public static ArrayList<Point> toLatLongs(String llStrings){
-        /*Log.d("进入toLatLongs方法", llStrings.trim());
-        Log.e("分割后的string数组", "==" + llStrings.charAt(0) + "==");
 
-        if(llStrings.contains("\n")) {
-            llStrings = llStrings.replace('\n', 'M');
-            Log.e("包含回车键", "" + llStrings);
-        }
-        else
-            Log.d("不包含回车键", "don't contain enter key");*/
         String[] lls = llStrings.split("\n");
         ArrayList<Point> latLongList = new ArrayList<>();
         for(String s : lls){
