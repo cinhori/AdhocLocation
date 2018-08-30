@@ -1,9 +1,6 @@
 package com.dantou.adhoc;
 
 import android.Manifest;
-import android.app.Activity;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,47 +10,37 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.SimpleExpandableListAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.DotOptions;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.CircleOptions;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.dantou.model.Point;
 import com.dantou.util.StringToLatLong;
 import com.dantou.util.XorVerification;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
@@ -67,6 +54,7 @@ public class BleSppActivity extends AppCompatActivity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+    public static final int SAFE_DISTANCE = 500;
 
     static long recv_cnt = 0;
 
@@ -85,6 +73,7 @@ public class BleSppActivity extends AppCompatActivity {
     //private final String LIST_UUID = "UUID";
 
     private Point myPoint;
+    private LatLng myLatLong;
     private ArrayList<Point> otherPoints = new ArrayList<>();
     //private ArrayList<Point> points;
 
@@ -106,6 +95,12 @@ public class BleSppActivity extends AppCompatActivity {
 
     //坐标转换
     CoordinateConverter converter;
+
+    //构建Marker图标
+    BitmapDescriptor guest_in;
+    BitmapDescriptor guest_out;
+    OverlayOptions ooCircle;
+    OverlayOptions ooMarker;
 
     //测速
     /*private Timer timer;
@@ -189,6 +184,9 @@ public class BleSppActivity extends AppCompatActivity {
         mapView = findViewById(R.id.baiduMapView);
         baiduMap = mapView.getMap();
         baiduMap.setMyLocationEnabled(true);
+
+        guest_in = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_16);
+        guest_out = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_red_16);
 
         //转换工具初始化
         converter = new CoordinateConverter();
@@ -482,10 +480,14 @@ public class BleSppActivity extends AppCompatActivity {
             }
         }*/
 
+        baiduMap.clear();
+
         if(myPoint != null){
 
             converter.coord(new LatLng(myPoint.getLatitude(), myPoint.getLongitude()));
-            LatLng myLatLong = converter.convert();
+            myLatLong = converter.convert();
+            Log.d("获得在BaiduMap中的地址",
+                    "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
 
             if(isFirstLocate){
                 MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
@@ -497,7 +499,11 @@ public class BleSppActivity extends AppCompatActivity {
                 isFirstLocate = false;
             }
 
-            baiduMap.clear();
+            //画圆
+            ooCircle = new CircleOptions().center(myLatLong).fillColor(0x00FF0000)
+                    .radius(SAFE_DISTANCE).stroke(new Stroke(3, Color.RED));
+            Log.d("画圆", "半径500m，透明度1，颜色无");
+            baiduMap.addOverlay(ooCircle);
 
             //将当前节点显示在地图上
             MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
@@ -512,11 +518,18 @@ public class BleSppActivity extends AppCompatActivity {
             for(Point p : otherPoints){
                 others.add(converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert());
             }
+
             //将其他节点显示在地图上
-            OverlayOptions ooDot;
             for(LatLng other : others) {
-                ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
-                baiduMap.addOverlay(ooDot);
+                //ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
+                double distance = DistanceUtil.getDistance(other, myLatLong);
+                Log.e("节点到中心点距离", distance + "");
+                if (distance < SAFE_DISTANCE){
+                    ooMarker = new MarkerOptions().position(other).icon(guest_in);
+                }else {
+                    ooMarker = new MarkerOptions().position(other).icon(guest_out);
+                }
+                baiduMap.addOverlay(ooMarker);
             }
         }
     }
