@@ -43,6 +43,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.dantou.model.Point;
 import com.dantou.util.StringToLatLong;
 import com.dantou.util.XorVerification;
@@ -102,6 +103,9 @@ public class BleSppActivity extends AppCompatActivity {
     int sendIndex = 0;
     int sendDataLen=0;
     byte[] sendBuf;*/
+
+    //坐标转换
+    CoordinateConverter converter;
 
     //测速
     /*private Timer timer;
@@ -185,6 +189,10 @@ public class BleSppActivity extends AppCompatActivity {
         mapView = findViewById(R.id.baiduMapView);
         baiduMap = mapView.getMap();
         baiduMap.setMyLocationEnabled(true);
+
+        //转换工具初始化
+        converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.GPS);
 
         getPermission();
 
@@ -476,7 +484,8 @@ public class BleSppActivity extends AppCompatActivity {
 
         if(myPoint != null){
 
-            LatLng myLatLong = new LatLng(myPoint.getLatitude(), myPoint.getLongitude());
+            converter.coord(new LatLng(myPoint.getLatitude(), myPoint.getLongitude()));
+            LatLng myLatLong = converter.convert();
 
             if(isFirstLocate){
                 MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
@@ -501,8 +510,7 @@ public class BleSppActivity extends AppCompatActivity {
         List<LatLng> others = new LinkedList<>();
         if(otherPoints != null){
             for(Point p : otherPoints){
-
-                others.add(new LatLng(p.getLatitude(), p.getLongitude()));
+                others.add(converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert());
             }
             //将其他节点显示在地图上
             OverlayOptions ooDot;
