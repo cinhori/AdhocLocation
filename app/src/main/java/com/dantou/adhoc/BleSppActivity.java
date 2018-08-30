@@ -24,9 +24,11 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.CircleOptions;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
@@ -172,8 +174,6 @@ public class BleSppActivity extends AppCompatActivity {
         }
     };
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -256,6 +256,18 @@ public class BleSppActivity extends AppCompatActivity {
 
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Bundle bundle = marker.getExtraInfo();
+                String info = bundle.getString("info");
+                Log.d("显示bundle信息", info);
+                Toast.makeText(BleSppActivity.this, info, Toast.LENGTH_LONG).show();
+                return false;
+
+            }
+        });
 
     }
 
@@ -283,6 +295,9 @@ public class BleSppActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
+
+        guest_out.recycle();
+        guest_in.recycle();
 
         mapView.onDestroy();
         baiduMap.setMyLocationEnabled(false);
@@ -505,6 +520,7 @@ public class BleSppActivity extends AppCompatActivity {
             Log.d("画圆", "半径500m，透明度1，颜色无");
             baiduMap.addOverlay(ooCircle);
 
+
             //将当前节点显示在地图上
             MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
             locationBuilder.latitude(myLatLong.latitude);
@@ -513,14 +529,10 @@ public class BleSppActivity extends AppCompatActivity {
             baiduMap.setMyLocationData(locationData);
         }
 
-        List<LatLng> others = new LinkedList<>();
         if(otherPoints != null){
             for(Point p : otherPoints){
-                others.add(converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert());
-            }
-
-            //将其他节点显示在地图上
-            for(LatLng other : others) {
+                LatLng other = converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert();
+                //将其他节点显示在地图上
                 //ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
                 double distance = DistanceUtil.getDistance(other, myLatLong);
                 Log.e("节点到中心点距离", distance + "");
@@ -529,8 +541,14 @@ public class BleSppActivity extends AppCompatActivity {
                 }else {
                     ooMarker = new MarkerOptions().position(other).icon(guest_out);
                 }
-                baiduMap.addOverlay(ooMarker);
+                Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
+                Log.d("为从节点添加bundle", p.toString());
+                Bundle bundle = new Bundle();
+                bundle.putString("info", "节点ID为" + p.getId()
+                        + ";经度：" + other.longitude + ";纬度：" + other.latitude);
+                marker.setExtraInfo(bundle);
             }
+
         }
     }
 
