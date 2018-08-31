@@ -29,7 +29,6 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
@@ -82,6 +81,7 @@ public class BleSppActivity extends AppCompatActivity {
     //构建Marker图标
     BitmapDescriptor guest_in;
     BitmapDescriptor guest_out;
+    BitmapDescriptor leader;
     OverlayOptions ooCircle;
     OverlayOptions ooMarker;
 
@@ -157,6 +157,7 @@ public class BleSppActivity extends AppCompatActivity {
 
         guest_in = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_32);
         guest_out = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_red_32);
+        leader = BitmapDescriptorFactory.fromResource(R.drawable.leader_48);
 
         //转换工具初始化
         converter = new CoordinateConverter();
@@ -319,11 +320,18 @@ public class BleSppActivity extends AppCompatActivity {
 
 
             //将当前节点显示在地图上
-            MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
+            /*MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
             locationBuilder.latitude(myLatLong.latitude);
             locationBuilder.longitude(myLatLong.longitude);
             MyLocationData locationData = locationBuilder.build();
-            baiduMap.setMyLocationData(locationData);
+            baiduMap.setMyLocationData(locationData);*/
+            ooMarker = new MarkerOptions().position(myLatLong).icon(leader);
+            Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
+            Log.d("为从节点添加bundle", myPoint.toString());
+            Bundle bundle = new Bundle();
+            bundle.putString("info", "节点ID为1"
+                    + ";\n经度：" + myLatLong.longitude + ";\n纬度：" + myLatLong.latitude);
+            leaderMarker.setExtraInfo(bundle);
         }
 
         int unsafety = 0;
