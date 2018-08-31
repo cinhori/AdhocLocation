@@ -348,7 +348,7 @@ public class BleSppActivity extends AppCompatActivity {
                     ooMarker = new MarkerOptions().position(other).icon(guest_in);
                 }else {
                     ooMarker = new MarkerOptions().position(other).icon(guest_out);
-                    unsafety++;
+                    if (other.latitude > 0 && other.longitude > 0)  unsafety++;
                 }
                 Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
                 Log.d("为从节点添加bundle", p.toString());
