@@ -191,7 +191,9 @@ public class BleSppActivity extends AppCompatActivity {
         baiduMap.setMyLocationEnabled(true);
 
         allCount = findViewById(R.id.all_count);
+        allCount.setText("0");
         outOfSafetyCount = findViewById(R.id.out_safety);
+        outOfSafetyCount.setText("0");
 
         guest_in = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_32);
         guest_out = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_red_32);
