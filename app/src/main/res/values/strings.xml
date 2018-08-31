@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AdhocLocation</string>
+    <string name="app_name">户外精灵</string>
     <string name="latlong_hint">latitude and longitude</string>
     <string name="submit_button">submit</string>
     <string name="bluetooth_dev_textView_hint">正在搜索蓝牙设备。。。</string>
