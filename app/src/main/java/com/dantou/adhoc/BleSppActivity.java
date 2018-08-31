@@ -16,7 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +24,6 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.CircleOptions;
-import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -42,7 +40,6 @@ import com.dantou.util.StringToLatLong;
 import com.dantou.util.XorVerification;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -51,7 +48,7 @@ import java.util.List;
  * communicates with {@code BluetoothLeService}, which in turn interacts with the
  * Bluetooth LE API.
  */
-//public class BleSppActivity extends AppCompatActivity implements View.OnClickListener {//
+
 public class BleSppActivity extends AppCompatActivity {
     private final static String TAG = BleSppActivity.class.getSimpleName();
 
@@ -69,36 +66,15 @@ public class BleSppActivity extends AppCompatActivity {
     private String mDeviceName;
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
-    //private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
-    //private boolean mConnected = false;
-
-    //private final String LIST_NAME = "NAME";
-    //private final String LIST_UUID = "UUID";
 
     private Point myPoint;
     private LatLng myLatLong;
     private ArrayList<Point> otherPoints = new ArrayList<>();
-    //private ArrayList<Point> points;
-
-
-    /*private TextView mDataRecvText;
-    private TextView mNotify_speed_text;
-    private EditText mEditBox;
-    private TextView mSendBytes;
-    private TextView mDataSendFormat;
-
-    private long recvBytes = 0;
-    private long lastSecondBytes = 0;*/
 
     private TextView allCount;
     private TextView outOfSafetyCount;
 
     private StringBuilder mData;
-
-    /*private long sendBytes;
-    int sendIndex = 0;
-    int sendDataLen=0;
-    byte[] sendBuf;*/
 
     //坐标转换
     CoordinateConverter converter;
@@ -108,10 +84,6 @@ public class BleSppActivity extends AppCompatActivity {
     BitmapDescriptor guest_out;
     OverlayOptions ooCircle;
     OverlayOptions ooMarker;
-
-    //测速
-    /*private Timer timer;
-    private TimerTask task;*/
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -164,25 +136,13 @@ public class BleSppActivity extends AppCompatActivity {
 //                      stringBuilder.append(String.format("%02X ", byteChar));
 //                Log.v("log",stringBuilder.toString());
                 displayData(intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA));
-            }/*else if (BluetoothLeService.ACTION_WRITE_SUCCESSFUL.equals(action)) {
-                mSendBytes.setText(sendBytes + " ");
-                if (sendDataLen>0)
-                {
-                    Log.v("log","Write OK,Send again");
-                    onSendBtnClicked();
-                }
-                else {
-                    Log.v("log","Write Finish");
-                }
-            }*/
-
+            }
         }
     };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // setContentView(R.layout.gatt_services_characteristics);
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.ble_spp);
 
@@ -209,60 +169,7 @@ public class BleSppActivity extends AppCompatActivity {
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
-        //mDataRecvText = (TextView) findViewById(R.id.data_read_text);
-        /*mNotify_speed_text = (TextView) findViewById(R.id.notify_speed_text);*/
-        Button mShow = findViewById(R.id.show_map);
-
-        /*mEditBox = (EditText) findViewById(R.id.data_edit_box);
-        mSendBytes = (TextView) findViewById(R.id.byte_send_text);
-        mDataSendFormat = (TextView) findViewById(R.id.data_sended_format);
-        Button mSendBtn = (Button) findViewById(R.id.send_data_btn);
-        Button mCleanTextBtn = (Button) findViewById(R.id.clean_text_btn);*/
-
-/*
-        mDataRecvFormat.setOnClickListener(this);
-*/
-        /*mDataSendFormat.setOnClickListener(this);
-        mSendBytes.setOnClickListener(this);*/
-        //mShow.setOnClickListener(this);
-
-        /*mSendBtn.setOnClickListener(this);
-        mCleanTextBtn.setOnClickListener(this);*/
-        //mDataRecvText.setMovementMethod(ScrollingMovementMethod.getInstance());
         mData = new StringBuilder();
-
-        final int SPEED = 1;
-        /*final Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case SPEED:
-                        lastSecondBytes = recvBytes - lastSecondBytes;
-                        mNotify_speed_text.setText(String.valueOf(lastSecondBytes)+ " B/s");
-                        lastSecondBytes = recvBytes;
-                        break;
-                }
-            }
-        };*/
-
-        /*task = new TimerTask() {
-            @Override
-            public void run() {
-                Message message = new Message();
-                message.what = SPEED;
-                message.obj = System.currentTimeMillis();
-                handler.sendMessage(message);
-            }
-        };*/
-
-        /*timer = new Timer();
-        // 参数：
-        // 1000，延时1秒后执行。
-        // 1000，每隔2秒执行1次task。
-        timer.schedule(task, 1000, 1000);*/
-
-        //getActionBar().setTitle(mDeviceName);
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
@@ -278,7 +185,6 @@ public class BleSppActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     @Override
@@ -343,14 +249,14 @@ public class BleSppActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }*/
 
-    private void updateConnectionState(final int resourceId) {
+    /*private void updateConnectionState(final int resourceId) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                // mConnectionState.setText(resourceId);
             }
         });
-    }
+    }*/
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
@@ -362,70 +268,6 @@ public class BleSppActivity extends AppCompatActivity {
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_NO_DISCOVERED);
         return intentFilter;
     }
-
-    /*//动态效果
-    public void convertText(final TextView textView, final int convertTextId) {
-        final Animation scaleIn = AnimationUtils.loadAnimation(this,
-                R.anim.text_scale_in);
-        Animation scaleOut = AnimationUtils.loadAnimation(this,
-                R.anim.text_scale_out);
-        scaleOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                textView.setText(convertTextId);
-                textView.startAnimation(scaleIn);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        textView.startAnimation(scaleOut);
-    }*/
-
-    //获取输入框十六进制格式
-    /*private String getHexString() {
-        String s = mEditBox.getText().toString();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (('0' <= c && c <= '9') || ('a' <= c && c <= 'f') ||
-                    ('A' <= c && c <= 'F')) {
-                sb.append(c);
-            }
-        }
-        if ((sb.length() % 2) != 0) {
-            sb.deleteCharAt(sb.length());
-        }
-        return sb.toString();
-    }*/
-
-
-    /*private byte[] stringToBytes(String s) {
-        byte[] buf = new byte[s.length() / 2];
-        for (int i = 0; i < buf.length; i++) {
-            try {
-                buf[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-        return buf;
-    }*/
-
-    /*public String asciiToString(byte[] bytes) {
-        char[] buf = new char[bytes.length];
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < buf.length; i++) {
-            buf[i] = (char) bytes[i];
-            sb.append(buf[i]);
-        }
-        return sb.toString();
-    }*/
 
     public String bytesToString(byte[] bytes) {
         final char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -442,68 +284,13 @@ public class BleSppActivity extends AppCompatActivity {
         return sb.toString();
     }
 
-
-    /*private void getSendBuf(){
-        sendIndex = 0;
-        if (mDataSendFormat.getText().equals(getResources().getString(R.string.data_format_default))) {
-            sendBuf = mEditBox.getText().toString().trim().getBytes();
-        } else {
-            sendBuf = stringToBytes(getHexString());
-        }
-        sendDataLen = sendBuf.length;
-    }
-    private void onSendBtnClicked() {
-        if (sendDataLen>20) {
-            sendBytes += 20;
-            final byte[] buf = new byte[20];
-           // System.arraycopy(buffer, 0, tmpBuf, 0, writeLength);
-            for (int i=0;i<20;i++)
-            {
-                buf[i] = sendBuf[sendIndex+i];
-            }
-            sendIndex+=20;
-            mBluetoothLeService.writeData(buf);
-            sendDataLen -= 20;
-        }
-        else {
-            sendBytes += sendDataLen;
-            final byte[] buf = new byte[sendDataLen];
-            for (int i=0;i<sendDataLen;i++)
-            {
-                buf[i] = sendBuf[sendIndex+i];
-            }
-            mBluetoothLeService.writeData(buf);
-            sendDataLen = 0;
-            sendIndex = 0;
-        }
-    }*/
-
     private void displayData(byte[] buf) {
-        //recvBytes += buf.length;
         recv_cnt += buf.length;
-
-        /*if (recv_cnt >= 1024)
-        {
-            recv_cnt = 0;
-            mData.delete(0,mData.length()/2); //UI界面只保留512个字节，免得APP卡顿
-        }*/
 
         String s = bytesToString(buf);
         mData.append(s);
 
-        //mDataRecvText.setText(mData.toString());
-
         cut(mData);
-
-        /*points =  StringToLatLong.toLatLongs(mData.toString());
-
-        for(Point p : points){
-            if(p.getId() == 1){
-                myPoint = p;
-            }else{
-                otherPoints.add(p);
-            }
-        }*/
 
         baiduMap.clear();
 
@@ -637,52 +424,6 @@ public class BleSppActivity extends AppCompatActivity {
         return sb;
 
     }
-
-    /*@Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            *//*case R.id.data_received_format:
-                if (mDataRecvFormat.getText().equals(getResources().getString(R.string.data_format_default))) {
-                    convertText(mDataRecvFormat, R.string.data_format_hex);
-                } else {
-                  convertText(mDataRecvFormat,R.string.data_format_default);
-                }
-                break;*//*
-
-            *//*case R.id.data_sended_format:
-                if (mDataSendFormat.getText().equals(getResources().getString(R.string.data_format_default)))  {
-                    convertText(mDataSendFormat, R.string.data_format_hex);
-                } else {
-                    convertText(mDataSendFormat, R.string.data_format_default);
-                }
-                break;*//*
-
-            *//*case R.id.byte_send_text:
-                sendBytes = 0;
-                convertText(mSendBytes, R.string.zero);
-                break;*//*
-
-            *//*case R.id.send_data_btn:
-                getSendBuf();
-                onSendBtnClicked();
-                break;*//*
-
-            *//*case R.id.clean_text_btn:
-                mEditBox.setText("");
-                break;*//*
-
-            case R.id.show_map:
-                Log.v("显示map按钮", "show map");
-                Intent mapIntent = new Intent(BleSppActivity.this, MapActivity.class);
-                mapIntent.putExtra("myPoint", myPoint);
-                mapIntent.putParcelableArrayListExtra("otherPoints", otherPoints);
-                startActivity(mapIntent);
-                break;
-
-            default:
-                break;
-        }
-    }*/
 
     private void getPermission(){
         List<String> permissionList = new ArrayList<>();

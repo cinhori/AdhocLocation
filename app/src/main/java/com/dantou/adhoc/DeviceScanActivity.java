@@ -190,68 +190,6 @@ public class DeviceScanActivity extends ListActivity {
         invalidateOptionsMenu();
     }
 
-//    private void scanLeDevice(final boolean enable) {
-//        if (enable) {
-//            // Stops scanning after a pre-defined scan period.
-//            mHandler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mScanning = false;
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                        BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-//                        scanner.stopScan(leCallback);
-//                    }
-//                    else {
-//                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//                    }
-//                    //  mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//                    invalidateOptionsMenu();
-//                }
-//            }, SCAN_PERIOD);
-//
-//            mScanning = true;
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-//                scanner.stopScan(leCallback);
-//            }
-//            else{
-//                mBluetoothAdapter.startLeScan(mLeScanCallback);
-//            }
-//            mBluetoothAdapter.startLeScan(mLeScanCallback);
-//
-//        } else {
-//            mScanning = false;
-//            //       mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-//                scanner.stopScan(leCallback);
-//            }
-//            else{
-//                mBluetoothAdapter.startLeScan(mLeScanCallback);
-//            }
-//        }
-//        invalidateOptionsMenu();
-//    }
-//    @SuppressLint("NewApi")
-//    private ScanCallback leCallback = new ScanCallback() {
-//        @Override
-//        public void onScanResult(int callbackType, ScanResult result) {
-//            super.onScanResult(callbackType, result);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                BluetoothDevice device = result.getDevice();
-//                mLeDeviceListAdapter.addDevice(device);
-//                mLeDeviceListAdapter.notifyDataSetChanged();
-//            }
-//        }
-//
-//        @Override
-//        public void onScanFailed(int errorCode) {
-//            super.onScanFailed(errorCode);
-//
-//        }
-//    };
-
     // Adapter for holding devices found through scanning.
     private class LeDeviceListAdapter extends BaseAdapter {
         private ArrayList<BluetoothDevice> mLeDevices;
