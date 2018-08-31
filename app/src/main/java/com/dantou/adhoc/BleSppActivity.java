@@ -16,6 +16,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +55,7 @@ public class BleSppActivity extends AppCompatActivity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-    public static final int SAFE_DISTANCE = 500;
+    public static int safeDistance = 500;
 
     static long recv_cnt = 0;
 
@@ -220,35 +222,34 @@ public class BleSppActivity extends AppCompatActivity {
         baiduMap.setMyLocationEnabled(false);
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.gatt_services, menu);
-        if (mConnected) {
-            menu.findItem(R.id.menu_connect).setVisible(false);
-            menu.findItem(R.id.menu_disconnect).setVisible(true);
-        } else {
-            menu.findItem(R.id.menu_connect).setVisible(true);
-            menu.findItem(R.id.menu_disconnect).setVisible(false);
-        }
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }*/
+    }
 
-    /*@Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.menu_connect:
-                mBluetoothLeService.connect(mDeviceAddress);
+            case R.id.expand_menu:
+                safeDistance += 50;
+                baiduMap.clear();
+                addMarker();
                 return true;
-            case R.id.menu_disconnect:
-                mBluetoothLeService.connect(mDeviceAddress);
-                //mBluetoothLeService.disconnect();
-                return true;
-            case android.R.id.home:
-                onBackPressed();
+            case R.id.reduce_menu:
+                if (safeDistance < 50){
+                    Toast.makeText(BleSppActivity.this,
+                            "安全半径已经为0，不能继续缩小", Toast.LENGTH_SHORT).show();
+                    return true;
+                }else {
+                    safeDistance -= 50;
+                    baiduMap.clear();
+                    addMarker();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
     /*private void updateConnectionState(final int resourceId) {
         runOnUiThread(new Runnable() {
@@ -295,72 +296,8 @@ public class BleSppActivity extends AppCompatActivity {
 
         baiduMap.clear();
 
-        if(myPoint != null){
+        addMarker();
 
-            converter.coord(new LatLng(myPoint.getLatitude(), myPoint.getLongitude()));
-            myLatLong = converter.convert();
-            Log.d("获得在BaiduMap中的地址",
-                    "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
-
-            if(isFirstLocate){
-                MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
-                baiduMap.animateMapStatus(update);
-
-                update = MapStatusUpdateFactory.newLatLng(myLatLong);
-                baiduMap.animateMapStatus(update);
-
-                isFirstLocate = false;
-            }
-
-            //画圆
-            ooCircle = new CircleOptions().center(myLatLong).fillColor(0x00FF0000)
-                    .radius(SAFE_DISTANCE).stroke(new Stroke(3, Color.RED));
-            Log.d("画圆", "半径500m，透明度1，颜色无");
-            baiduMap.addOverlay(ooCircle);
-
-
-            //将当前节点显示在地图上
-            /*MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
-            locationBuilder.latitude(myLatLong.latitude);
-            locationBuilder.longitude(myLatLong.longitude);
-            MyLocationData locationData = locationBuilder.build();
-            baiduMap.setMyLocationData(locationData);*/
-            ooMarker = new MarkerOptions().position(myLatLong).icon(leader);
-            Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
-            Log.d("为从节点添加bundle", myPoint.toString());
-            Bundle bundle = new Bundle();
-            bundle.putString("info", "节点ID为1"
-                    + ";\n经度：" + myLatLong.longitude + ";\n纬度：" + myLatLong.latitude);
-            leaderMarker.setExtraInfo(bundle);
-        }
-
-        int unsafety = 0;
-        if(otherPoints != null){
-            int all = otherPoints.size() + 1;
-            allCount.setText("" + all);
-            for(Point p : otherPoints){
-                LatLng other = converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert();
-                //将其他节点显示在地图上
-                //ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
-                double distance = DistanceUtil.getDistance(other, myLatLong);
-                Log.e("节点到中心点距离", distance + "");
-                if (distance < SAFE_DISTANCE){
-                    ooMarker = new MarkerOptions().position(other).icon(guest_in);
-                }else {
-                    ooMarker = new MarkerOptions().position(other).icon(guest_out);
-                    if (other.latitude > 0 && other.longitude > 0)  unsafety++;
-                }
-                Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
-                Log.d("为从节点添加bundle", p.toString());
-                Bundle bundle = new Bundle();
-                bundle.putString("info", "节点ID为" + p.getId()
-                        + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude);
-                marker.setExtraInfo(bundle);
-            }
-            outOfSafetyCount.setText("" + unsafety);
-        }else{
-            allCount.setText("0");
-        }
     }
 
     private StringBuilder cut(StringBuilder sb){
@@ -431,6 +368,68 @@ public class BleSppActivity extends AppCompatActivity {
 
         return sb;
 
+    }
+
+    private void addMarker(){
+        if(myPoint != null){
+
+            converter.coord(new LatLng(myPoint.getLatitude(), myPoint.getLongitude()));
+            myLatLong = converter.convert();
+            Log.d("获得在BaiduMap中的地址",
+                    "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
+
+            if(isFirstLocate){
+                MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
+                baiduMap.animateMapStatus(update);
+
+                update = MapStatusUpdateFactory.newLatLng(myLatLong);
+                baiduMap.animateMapStatus(update);
+
+                isFirstLocate = false;
+            }
+
+            //画圆
+            ooCircle = new CircleOptions().center(myLatLong).fillColor(0x00FF0000)
+                    .radius(safeDistance).stroke(new Stroke(3, Color.RED));
+            Log.d("画圆", "半径" + safeDistance + "，透明度1，颜色无");
+            baiduMap.addOverlay(ooCircle);
+
+            ooMarker = new MarkerOptions().position(myLatLong).icon(leader);
+            Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
+            Log.d("为从节点添加bundle", myPoint.toString());
+            Bundle bundle = new Bundle();
+            bundle.putString("info", "节点ID为1"
+                    + ";\n经度：" + myLatLong.longitude + ";\n纬度：" + myLatLong.latitude);
+            leaderMarker.setExtraInfo(bundle);
+        }
+
+        int unsafety = 0;
+        if(otherPoints != null){
+            int all = otherPoints.size() + 1;
+            allCount.setText("" + all);
+            for(Point p : otherPoints){
+                LatLng other = converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert();
+                //将其他节点显示在地图上
+                //ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
+                double distance = DistanceUtil.getDistance(other, myLatLong);
+                Log.e("节点到中心点距离", distance + "");
+                if (distance < safeDistance){
+                    ooMarker = new MarkerOptions().position(other).icon(guest_in);
+                }else {
+                    ooMarker = new MarkerOptions().position(other).icon(guest_out);
+                    if (other.latitude > 0 && other.longitude > 0)  unsafety++;
+                }
+                Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
+                Log.d("为从节点添加bundle", p.toString());
+                Bundle bundle = new Bundle();
+                bundle.putString("info", "节点ID为" + p.getId()
+                        + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude);
+                marker.setExtraInfo(bundle);
+            }
+            outOfSafetyCount.setText("" + unsafety);
+        }else{
+            allCount.setText("0");
+        }
     }
 
     private void getPermission(){

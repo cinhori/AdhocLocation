@@ -15,17 +15,8 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:title="@string/title_devices"
-          android:id="@+id/menu_refresh"
-          android:checkable="false"
-          android:orderInCategory="1"
-          app:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_scan"
-          android:title="@string/menu_scan"
-          android:orderInCategory="100"
-          app:showAsAction="ifRoom|withText"/>
-    <item android:id="@+id/menu_stop"
-          android:title="@string/menu_stop"
-          android:orderInCategory="101"
-          app:showAsAction="ifRoom|withText"/>
+
+    <item android:id="@+id/expand_menu" android:title="扩大安全范围" />
+    <item android:id="@+id/reduce_menu" android:title="缩小安全范围" />
+
 </menu>

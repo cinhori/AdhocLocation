@@ -91,7 +91,7 @@ public class DeviceScanActivity extends ListActivity {
         mayRequestLocation();
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         if (!mScanning) {
@@ -117,7 +117,7 @@ public class DeviceScanActivity extends ListActivity {
                 break;
         }
         return true;
-    }
+    }*/
 
     @Override
     protected void onResume() {
