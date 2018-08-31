@@ -16,7 +16,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/expand_menu" android:title="扩大安全范围" />
-    <item android:id="@+id/reduce_menu" android:title="缩小安全范围" />
+    <item android:id="@+id/expand_menu" android:icon="@drawable/expand_32_green"
+        app:showAsAction="always" android:title="扩大安全圈"/>
+    <item android:id="@+id/reduce_menu" android:icon="@drawable/reduce_32_red"
+        app:showAsAction="always" android:title="缩小安全圈"/>
 
 </menu>
