@@ -10,4 +10,6 @@
     <item name="device_address" type="id"/>
     <item name="show_map" type="id" />
 
+    <item name="all_count" type="id" />
+    <item name="out_safety" type="id" />
 </resources>

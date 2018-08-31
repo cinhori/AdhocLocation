@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -88,6 +89,10 @@ public class BleSppActivity extends AppCompatActivity {
 
     private long recvBytes = 0;
     private long lastSecondBytes = 0;*/
+
+    private TextView allCount;
+    private TextView outOfSafetyCount;
+
     private StringBuilder mData;
 
     /*private long sendBytes;
@@ -185,8 +190,11 @@ public class BleSppActivity extends AppCompatActivity {
         baiduMap = mapView.getMap();
         baiduMap.setMyLocationEnabled(true);
 
-        guest_in = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_16);
-        guest_out = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_red_16);
+        allCount = findViewById(R.id.all_count);
+        outOfSafetyCount = findViewById(R.id.out_safety);
+
+        guest_in = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_32);
+        guest_out = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_red_32);
 
         //转换工具初始化
         converter = new CoordinateConverter();
@@ -529,7 +537,10 @@ public class BleSppActivity extends AppCompatActivity {
             baiduMap.setMyLocationData(locationData);
         }
 
+        int unsafety = 0;
         if(otherPoints != null){
+            int all = otherPoints.size() + 1;
+            allCount.setText("" + all);
             for(Point p : otherPoints){
                 LatLng other = converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert();
                 //将其他节点显示在地图上
@@ -540,15 +551,18 @@ public class BleSppActivity extends AppCompatActivity {
                     ooMarker = new MarkerOptions().position(other).icon(guest_in);
                 }else {
                     ooMarker = new MarkerOptions().position(other).icon(guest_out);
+                    unsafety++;
                 }
                 Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
                 Log.d("为从节点添加bundle", p.toString());
                 Bundle bundle = new Bundle();
                 bundle.putString("info", "节点ID为" + p.getId()
-                        + ";经度：" + other.longitude + ";纬度：" + other.latitude);
+                        + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude);
                 marker.setExtraInfo(bundle);
             }
-
+            outOfSafetyCount.setText("" + unsafety);
+        }else{
+            allCount.setText("0");
         }
     }
 
