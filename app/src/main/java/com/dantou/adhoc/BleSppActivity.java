@@ -174,6 +174,8 @@ public class BleSppActivity extends AppCompatActivity {
 
         mData = new StringBuilder();
 
+        myLatLong = new LatLng(0.0, 0.0);
+
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
@@ -235,6 +237,8 @@ public class BleSppActivity extends AppCompatActivity {
                 safeDistance += 50;
                 baiduMap.clear();
                 addMarker();
+                Toast.makeText(BleSppActivity.this,
+                        "当前的安全距离为" + safeDistance, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.reduce_menu:
                 if (safeDistance < 50){
@@ -245,6 +249,8 @@ public class BleSppActivity extends AppCompatActivity {
                     safeDistance -= 50;
                     baiduMap.clear();
                     addMarker();
+                    Toast.makeText(BleSppActivity.this,
+                            "当前的安全距离为" + safeDistance, Toast.LENGTH_SHORT).show();
                 }
                 return true;
         }
@@ -422,8 +428,13 @@ public class BleSppActivity extends AppCompatActivity {
                 Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
                 Log.d("为从节点添加bundle", p.toString());
                 Bundle bundle = new Bundle();
-                bundle.putString("info", "节点ID为" + p.getId()
-                        + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude);
+                if (myLatLong.longitude <= 0 || myLatLong.latitude <= 0){
+                    bundle.putString("info", "ID" + p.getId()
+                            + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude);
+                } else {
+                    bundle.putString("info", "ID" + p.getId()
+                            + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude + ";\n距离：" + distance);
+                }
                 marker.setExtraInfo(bundle);
             }
             outOfSafetyCount.setText("" + unsafety);
