@@ -5,6 +5,12 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
+/**
+ * @author cinhori
+ * @date 18-8-27
+ * @email lilei93s@163.com
+ * @Description 节点bean
+ */
 public class Point implements Parcelable{
     private int id;
     private double latitude;

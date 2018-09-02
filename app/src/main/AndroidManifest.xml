@@ -42,7 +42,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BleSppActivity" />
+        <activity android:name=".MainActivity" />
 
         <service
             android:name="com.baidu.location.f"

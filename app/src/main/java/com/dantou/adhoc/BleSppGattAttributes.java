@@ -19,7 +19,10 @@ package com.dantou.adhoc;
 import java.util.HashMap;
 
 /**
- * This class includes a small subset of standard GATT attributes for demonstration purposes.
+ * @author cinhori
+ * @date 18-8-23
+ * @email lilei93s@163.com
+ * @Description 蓝牙属性参数
  */
 public class BleSppGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();

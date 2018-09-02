@@ -37,8 +37,10 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Service for managing connection and data communication with a GATT server hosted on a
- * given Bluetooth LE device.
+ * @author cinhori
+ * @date 18-8-23
+ * @email lilei93s@163.com
+ * @Description 蓝牙连接与通信服务
  */
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();

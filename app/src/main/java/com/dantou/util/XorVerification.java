@@ -2,6 +2,12 @@ package com.dantou.util;
 
 import android.util.Log;
 
+/**
+ * @author cinhori
+ * @date 18-8-29
+ * @email lilei93s@163.com
+ * @Description 16进制字符串校验码计算工具类
+ */
 public class XorVerification {
 
     //23个字节，16进制

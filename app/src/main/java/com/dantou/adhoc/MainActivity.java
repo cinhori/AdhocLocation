@@ -44,14 +44,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * For a given BLE device, this Activity provides the user interface to connect, display data,
- * and display GATT services and characteristics supported by the device.  The Activity
- * communicates with {@code BluetoothLeService}, which in turn interacts with the
- * Bluetooth LE API.
+ * @author cinhori
+ * @date 18-8-21
+ * @email lilei93s@163.com
+ * @Description 软件的主界面，包括蓝牙、地图等
  */
-
-public class BleSppActivity extends AppCompatActivity {
-    private final static String TAG = BleSppActivity.class.getSimpleName();
+public class MainActivity extends AppCompatActivity {
+    private final static String TAG = MainActivity.class.getSimpleName();
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
@@ -185,7 +184,7 @@ public class BleSppActivity extends AppCompatActivity {
                 Bundle bundle = marker.getExtraInfo();
                 String info = bundle.getString("info");
                 Log.d("显示bundle信息", info);
-                Toast.makeText(BleSppActivity.this, info, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
                 return false;
 
             }
@@ -237,19 +236,19 @@ public class BleSppActivity extends AppCompatActivity {
                 safeDistance += 50;
                 baiduMap.clear();
                 addMarker();
-                Toast.makeText(BleSppActivity.this,
+                Toast.makeText(MainActivity.this,
                         "当前的安全距离为" + safeDistance, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.reduce_menu:
                 if (safeDistance < 50){
-                    Toast.makeText(BleSppActivity.this,
+                    Toast.makeText(MainActivity.this,
                             "安全半径已经为0，不能继续缩小", Toast.LENGTH_SHORT).show();
                     return true;
                 }else {
                     safeDistance -= 50;
                     baiduMap.clear();
                     addMarker();
-                    Toast.makeText(BleSppActivity.this,
+                    Toast.makeText(MainActivity.this,
                             "当前的安全距离为" + safeDistance, Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -445,24 +444,24 @@ public class BleSppActivity extends AppCompatActivity {
 
     private void getPermission(){
         List<String> permissionList = new ArrayList<>();
-        if(ContextCompat.checkSelfPermission(BleSppActivity.this,
+        if(ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
-        if(ContextCompat.checkSelfPermission(BleSppActivity.this,
+        if(ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
             permissionList.add(Manifest.permission.READ_PHONE_STATE);
         }
 
-        if(ContextCompat.checkSelfPermission(BleSppActivity.this,
+        if(ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
         if(!permissionList.isEmpty()){
             String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(BleSppActivity.this, permissions, 1);
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, 1);
         }
     }
 

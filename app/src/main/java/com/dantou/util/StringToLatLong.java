@@ -6,6 +6,12 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.dantou.model.Point;
 
+/**
+ * @author cinhori
+ * @date 18-9-2
+ * @email lilei93s@163.com
+ * @Description 字符串中提取经纬度等信息
+ */
 public class StringToLatLong {
     public static Point toLatLong(String llString){
 
