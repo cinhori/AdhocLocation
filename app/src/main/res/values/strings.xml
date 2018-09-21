@@ -27,4 +27,7 @@
     <string name="data_format_hex">Hex</string>
 
     <string name="copyright">Copyright©2018 湖北航天飞行器研究所. All rights reserved.</string>
+
+    <string name="username">Curry</string>
+    <string name="email">abcd@163.com</string>
 </resources>

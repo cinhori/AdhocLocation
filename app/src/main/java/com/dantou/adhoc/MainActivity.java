@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -156,11 +157,27 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         drawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.menu_black_32);
         }
+        navigationView.setCheckedItem(R.id.nav_history);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_history:
+                        Toast.makeText(MainActivity.this, "history", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_aboutus:
+                        Toast.makeText(MainActivity.this, "aboutus", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return true;
+            }
+        });
 
         mapView = findViewById(R.id.baiduMapView);
         baiduMap = mapView.getMap();
