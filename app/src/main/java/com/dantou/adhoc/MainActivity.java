@@ -14,6 +14,9 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     static long recv_cnt = 0;
 
+    private DrawerLayout drawerLayout;
     private MapView mapView;
 
     private BaiduMap baiduMap;
@@ -151,6 +155,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.menu_black_32);
+        }
+
         mapView = findViewById(R.id.baiduMapView);
         baiduMap = mapView.getMap();
         baiduMap.setMyLocationEnabled(true);
@@ -236,6 +247,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
             case R.id.expand_menu:
                 safeDistance += 50;
                 baiduMap.clear();
