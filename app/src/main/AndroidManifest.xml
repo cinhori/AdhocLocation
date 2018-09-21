@@ -36,13 +36,16 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="N1IDEAZVnuNAprPX00cFyB3A30VlhtG2" />
 
-        <activity android:name=".DeviceScanActivity">
+        <activity android:name=".StartPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name=".MainActivity" />
+        <activity android:name=".DeviceScanActivity" />
 
         <service
             android:name="com.baidu.location.f"

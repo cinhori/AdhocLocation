@@ -25,4 +25,6 @@
     <string name="data_format_default">Hex</string>
     <string name="clean">清除</string>
     <string name="data_format_hex">Hex</string>
+
+    <string name="copyright">Copyright©2018 湖北航天飞行器研究所. All rights reserved.</string>
 </resources>
