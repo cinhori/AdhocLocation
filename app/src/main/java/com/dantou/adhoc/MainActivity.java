@@ -1,6 +1,7 @@
 package com.dantou.adhoc;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,7 +11,9 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -92,6 +95,19 @@ public class MainActivity extends AppCompatActivity {
     OverlayOptions ooCircle;
     OverlayOptions ooMarker;
 
+    private ProgressDialog progressDialog;
+    public Handler pdHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    Log.e("handler接收到消息", "消息为0");
+                    progressDialog.dismiss();
+                    break;
+            }
+        }
+    };
+
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -163,6 +179,13 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.menu_black_32);
         }
+
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setTitle("状态");
+        progressDialog.setMessage("定位中...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         navigationView.setCheckedItem(R.id.nav_history);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -427,41 +450,54 @@ public class MainActivity extends AppCompatActivity {
 
     private void addMarker(){
         if(myPoint != null){
+            if (myPoint.getStatus() == Point.SAFE_UNLOCATED || myPoint.getStatus() == Point.UNSAFE_UNLOCATED){
+                progressDialog.show();
+            } else {
+                Log.e("进度条消失", "服务端节点已经获取GPS");
+                Thread tempThread = new Thread(){
+                    @Override
+                    public void run() {
+                        Message message = new Message();
+                        message.what = 0;
+                        pdHandler.sendMessage(message);
+                    }
+                };
+                tempThread.start();
+                converter.coord(new LatLng(myPoint.getLatitude(), myPoint.getLongitude()));
+                myLatLong = converter.convert();
+                Log.d("获得在BaiduMap中的地址",
+                        "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
 
-            converter.coord(new LatLng(myPoint.getLatitude(), myPoint.getLongitude()));
-            myLatLong = converter.convert();
-            Log.d("获得在BaiduMap中的地址",
-                    "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
+                if(isFirstLocate){
+                    MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
+                    baiduMap.animateMapStatus(update);
 
-            if(isFirstLocate){
-                MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
-                baiduMap.animateMapStatus(update);
+                    update = MapStatusUpdateFactory.newLatLng(myLatLong);
+                    baiduMap.animateMapStatus(update);
 
-                update = MapStatusUpdateFactory.newLatLng(myLatLong);
-                baiduMap.animateMapStatus(update);
+                    isFirstLocate = false;
+                }
 
-                isFirstLocate = false;
+                //画圆
+                ooCircle = new CircleOptions().center(myLatLong).fillColor(0x00FF0000)
+                        .radius(safeDistance).stroke(new Stroke(3, Color.RED));
+                Log.d("画圆", "半径" + safeDistance + "，透明度1，颜色无");
+                baiduMap.addOverlay(ooCircle);
+
+                ooMarker = new MarkerOptions().position(myLatLong).icon(leader);
+                Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
+                Log.d("为从节点添加bundle", myPoint.toString());
+                Bundle bundle = new Bundle();
+                bundle.putString("info", "节点ID为1"
+                        + ";\n经度：" + myLatLong.longitude + ";\n纬度：" + myLatLong.latitude);
+                leaderMarker.setExtraInfo(bundle);
             }
 
-            //画圆
-            ooCircle = new CircleOptions().center(myLatLong).fillColor(0x00FF0000)
-                    .radius(safeDistance).stroke(new Stroke(3, Color.RED));
-            Log.d("画圆", "半径" + safeDistance + "，透明度1，颜色无");
-            baiduMap.addOverlay(ooCircle);
-
-            ooMarker = new MarkerOptions().position(myLatLong).icon(leader);
-            Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
-            Log.d("为从节点添加bundle", myPoint.toString());
-            Bundle bundle = new Bundle();
-            bundle.putString("info", "节点ID为1"
-                    + ";\n经度：" + myLatLong.longitude + ";\n纬度：" + myLatLong.latitude);
-            leaderMarker.setExtraInfo(bundle);
         }
 
         int unsafety = 0;
         if(otherPoints != null){
-            int all = otherPoints.size() + 1;
-            allCount.setText("" + all);
+            int all = otherPoints.size();
             for(Point p : otherPoints){
                 LatLng other = converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert();
                 //将其他节点显示在地图上
@@ -490,9 +526,29 @@ public class MainActivity extends AppCompatActivity {
                 }
                 marker.setExtraInfo(bundle);
             }
-            outOfSafetyCount.setText("" + unsafety);
+            if (myPoint == null) {
+                Log.d("安全区外", "服务端节点未连接，客户端节点已存在");
+                outOfSafetyCount.setText("0");
+                allCount.setText("" + all);
+            }else if(myPoint.getStatus() == Point.SAFE_UNLOCATED || myPoint.getStatus() == Point.UNSAFE_UNLOCATED){
+                Log.d("安全区外", "服务端节点未定位，客户端节点已存在");
+                outOfSafetyCount.setText("0");
+                allCount.setText("" + (all+1));
+
+            }else {
+                Log.d("安全区外", "服务端节点已定位，客户端节点已存在");
+                outOfSafetyCount.setText("" + unsafety);
+                allCount.setText("" + (all+1));
+
+            }
         }else{
-            allCount.setText("0");
+            if (myPoint == null){
+                Log.d("总节点数", "服务端节点不存在，客户端节点不存在");
+                allCount.setText("0");
+            }else {
+                Log.d("总节点数", "服务端节点已连接，客户端节点不存在");
+                allCount.setText("1");
+            }
         }
     }
 
