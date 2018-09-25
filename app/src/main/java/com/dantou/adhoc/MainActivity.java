@@ -42,7 +42,6 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.dantou.model.Point;
-import com.dantou.util.StringToLatLong;
 import com.dantou.util.XorVerification;
 
 import java.util.ArrayList;
@@ -372,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
                 continue;
             }
 
-            Point tempPoint = StringToLatLong.toLatLong(tempString);
+            Point tempPoint = Point.parse(tempString);
             Log.d("剪切的节点", tempPoint.toString());
 
             if (tempPoint.getId() == 1){
