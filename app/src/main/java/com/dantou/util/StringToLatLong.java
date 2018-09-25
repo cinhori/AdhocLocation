@@ -27,7 +27,7 @@ public class StringToLatLong {
             double latitude = Integer.valueOf(llString.substring(26, 34), 16) * 0.00001;
             latitude = Double.parseDouble(decimalFormat.format(latitude));
 
-            return new Point(id, latitude, longitude, null);
+            return new Point(id, latitude, longitude, null, Point.SAFE_LOCATED);
         }
         return null;
     }

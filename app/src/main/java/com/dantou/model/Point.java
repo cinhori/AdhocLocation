@@ -12,19 +12,25 @@ import java.util.Date;
  * @Description 节点bean
  */
 public class Point implements Parcelable{
+    public final static int SAFE_LOCATED = 0;
+    public final static int UNSAFE_LOCATED = 1;
+    public final static int SAFE_UNLOCATED = 2;
+    public final static int UNSAFE_UNLOCATED = 3;
     private int id;
     private double latitude;
     private double longitude;
     private Date date;
+    private int status;
 
     public Point() {
     }
 
-    public Point(int id, double latitude, double longitude, Date date) {
+    public Point(int id, double latitude, double longitude, Date date, int status) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.date = date;
+        this.status = status;
     }
 
     protected Point(Parcel source){
@@ -32,6 +38,7 @@ public class Point implements Parcelable{
         latitude = source.readDouble();
         longitude = source.readDouble();
         date = (Date)source.readSerializable();
+        status = source.readInt();
     }
 
     public int getId() {
@@ -73,6 +80,7 @@ public class Point implements Parcelable{
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", date=" + date +
+                ", status=" + status +
                 '}' + "\n";
     }
 
@@ -87,6 +95,7 @@ public class Point implements Parcelable{
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
         dest.writeSerializable(date);
+        dest.writeInt(status);
     }
 
     public static final Creator<Point> CREATOR = new Creator<Point>() {
@@ -100,4 +109,12 @@ public class Point implements Parcelable{
             return new Point[size];
         }
     };
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }
