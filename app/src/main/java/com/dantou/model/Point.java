@@ -154,9 +154,16 @@ public class Point implements Parcelable{
                     ":" + minute +
                     ":" + second;
 
+            int status;
+            if (latitude <= 0 || longitude <= 0) {
+                status = SAFE_UNLOCATED;
+            }else {
+                status = SAFE_LOCATED;
+            }
+
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             try {
-                return new Point(id, latitude, longitude, simpleDateFormat.parse(dateString), Point.SAFE_LOCATED);
+                return new Point(id, latitude, longitude, simpleDateFormat.parse(dateString), status);
             } catch (ParseException e) {
                 e.printStackTrace();
             }

@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     //构建Marker图标
     BitmapDescriptor guest_in;
     BitmapDescriptor guest_out;
+    BitmapDescriptor guest_disappear;
     BitmapDescriptor leader;
     OverlayOptions ooCircle;
     OverlayOptions ooMarker;
@@ -193,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
         guest_in = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_32);
         guest_out = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_red_32);
+        guest_disappear = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_blue_32);
         leader = BitmapDescriptorFactory.fromResource(R.drawable.leader_48);
 
         //转换工具初始化
@@ -376,20 +378,30 @@ public class MainActivity extends AppCompatActivity {
 
             if (tempPoint.getId() == 1){
                 myPoint = tempPoint;
-            }else {
+            } else{
                 for (Point p : otherPoints){
                     if (p.getId() == tempPoint.getId()){
-                        Log.e("发现重复节点", "更新原节点位置");
-                        Log.d("原节点信息", p.toString());
-                        Log.d("现节点信息", tempPoint.toString());
-                        p.setLatitude(tempPoint.getLatitude());
-                        p.setLongitude(tempPoint.getLongitude());
-                        p.setDate(tempPoint.getDate());
+                        if(tempPoint.getStatus() == Point.SAFE_UNLOCATED ||
+                            tempPoint.getStatus() == Point.UNSAFE_UNLOCATED) {
+                            Log.e("节点位置消失", "改变状态");
+                            p.setStatus(tempPoint.getStatus());
+                        } else {
+                            Log.e("发现重复节点", "更新原节点位置");
+                            Log.d("原节点信息", p.toString());
+                            Log.d("现节点信息", tempPoint.toString());
+                            p.setLatitude(tempPoint.getLatitude());
+                            p.setLongitude(tempPoint.getLongitude());
+                            p.setDate(tempPoint.getDate());
+                            p.setStatus(tempPoint.getStatus());
+                        }
                         tempPoint = null;
                         break;
                     }
                 }
-                if (tempPoint != null) otherPoints.add(tempPoint);
+                //节点为新加入节点
+                if (tempPoint != null) {
+                    otherPoints.add(tempPoint);
+                }
             }
 
             sb = sb.delete(0, 48);
@@ -462,6 +474,10 @@ public class MainActivity extends AppCompatActivity {
                     ooMarker = new MarkerOptions().position(other).icon(guest_out);
                     if (other.latitude > 0 && other.longitude > 0)  unsafety++;
                 }
+                if (p.getStatus() == Point.UNSAFE_UNLOCATED || p.getStatus() == Point.SAFE_UNLOCATED){
+                    ooMarker = new MarkerOptions().position(other).icon(guest_disappear);
+                }
+
                 Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
                 Log.d("为从节点添加bundle", p.toString());
                 Bundle bundle = new Bundle();
