@@ -169,10 +169,14 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.nav_history:
-                        Toast.makeText(MainActivity.this, "history", Toast.LENGTH_SHORT).show();
+                        Intent historyIntent
+                                = new Intent(MainActivity.this, TraceHistoryActivity.class);
+                        startActivity(historyIntent);
                         break;
                     case R.id.nav_aboutus:
-                        Toast.makeText(MainActivity.this, "aboutus", Toast.LENGTH_SHORT).show();
+                        Intent aboutUsIntent
+                                = new Intent(MainActivity.this, AboutUsActivity.class);
+                        startActivity(aboutUsIntent);
                         break;
                 }
                 return true;

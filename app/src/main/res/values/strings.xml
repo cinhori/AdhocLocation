@@ -30,4 +30,7 @@
 
     <string name="username">Curry</string>
     <string name="email">abcd@163.com</string>
+
+    <string name="aboutus_text">Hello, world</string>
+    <string name="aboutus_toolbar">关于我们</string>
 </resources>

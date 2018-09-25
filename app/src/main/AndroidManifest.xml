@@ -42,7 +42,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".DeviceScanActivity" />
@@ -55,6 +54,9 @@
             android:name=".BluetoothLeService"
             android:enabled="true" />
 
+        <activity android:name=".TraceHistoryActivity" />
+        <activity android:name=".AboutUsActivity" android:label="@string/aboutus_toolbar">
+        </activity>
     </application>
 
 </manifest>
