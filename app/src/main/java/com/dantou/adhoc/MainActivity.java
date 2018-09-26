@@ -408,36 +408,12 @@ public class MainActivity extends AppCompatActivity {
             if (tempPoint.getId() == 1){
                 myPoint = tempPoint;
             } else{
-                if (!tempPoint.isSafe()){
-                    //振动
-                    Vibrator vibrator = (Vibrator)this.getSystemService(VIBRATOR_SERVICE);
-                    vibrator.vibrate(1000);
-                    //弹窗
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                    dialog.setTitle("SOS!!!");
-                    dialog.setMessage("节点" + tempPoint.getId() +
-                            "请求支援！节点位置为（" +
-                            tempPoint.getLongitude() + ", " + tempPoint.getLatitude() + "）");
-                    dialog.setCancelable(true);
-                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            dialog.cancel();
-                        }
-                    });
-                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            dialog.cancel();
-                        }
-                    });
-                    dialog.show();
-                }
-
                 for (Point p : otherPoints){
                     if (p.getId() == tempPoint.getId()){
+                        if (p.isSafe() && !tempPoint.isSafe()) {
+                            notify(tempPoint);
+                        }
+
                         if(!tempPoint.getLocated()) {
                             Log.e("节点位置消失", "改变状态");
                             p.setLocated(tempPoint.getLocated());
@@ -458,6 +434,7 @@ public class MainActivity extends AppCompatActivity {
                 //节点为新加入节点
                 if (tempPoint != null) {
                     otherPoints.add(tempPoint);
+                    notify(tempPoint);
                 }
             }
 
@@ -480,6 +457,36 @@ public class MainActivity extends AppCompatActivity {
 
         return sb;
 
+    }
+
+    private void notify(Point tempPoint){
+        if (!tempPoint.isSafe()){
+            //振动
+            Vibrator vibrator = (Vibrator)this.getSystemService(VIBRATOR_SERVICE);
+            vibrator.vibrate(1000);
+            //弹窗
+            AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+            dialog.setTitle("SOS!!!");
+            dialog.setMessage("节点" + tempPoint.getId() +
+                    "请求支援！节点位置为（" +
+                    tempPoint.getLongitude() + ", " + tempPoint.getLatitude() + "）");
+            dialog.setCancelable(true);
+            dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    dialog.cancel();
+                }
+            });
+            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    dialog.cancel();
+                }
+            });
+            dialog.show();
+        }
     }
 
     private void addMarker(){
