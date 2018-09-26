@@ -1,10 +1,12 @@
 package com.dantou.adhoc;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -91,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     BitmapDescriptor guest_in;
     BitmapDescriptor guest_out;
     BitmapDescriptor guest_disappear;
+    BitmapDescriptor guest_unsafe;
     BitmapDescriptor leader;
     OverlayOptions ooCircle;
     OverlayOptions ooMarker;
@@ -218,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
         guest_in = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_32);
         guest_out = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_red_32);
         guest_disappear = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_blue_32);
+        guest_unsafe = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_yellow_48);
         leader = BitmapDescriptorFactory.fromResource(R.drawable.leader_48);
 
         //转换工具初始化
@@ -397,17 +402,45 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Point tempPoint = Point.parse(tempString);
+
             Log.d("剪切的节点", tempPoint.toString());
 
             if (tempPoint.getId() == 1){
                 myPoint = tempPoint;
             } else{
+                if (!tempPoint.isSafe()){
+                    //振动
+                    Vibrator vibrator = (Vibrator)this.getSystemService(VIBRATOR_SERVICE);
+                    vibrator.vibrate(1000);
+                    //弹窗
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                    dialog.setTitle("SOS!!!");
+                    dialog.setMessage("节点" + tempPoint.getId() +
+                            "请求支援！节点位置为（" +
+                            tempPoint.getLongitude() + ", " + tempPoint.getLatitude() + "）");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            dialog.cancel();
+                        }
+                    });
+                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            dialog.cancel();
+                        }
+                    });
+                    dialog.show();
+                }
+
                 for (Point p : otherPoints){
                     if (p.getId() == tempPoint.getId()){
-                        if(tempPoint.getStatus() == Point.SAFE_UNLOCATED ||
-                            tempPoint.getStatus() == Point.UNSAFE_UNLOCATED) {
+                        if(!tempPoint.getLocated()) {
                             Log.e("节点位置消失", "改变状态");
-                            p.setStatus(tempPoint.getStatus());
+                            p.setLocated(tempPoint.getLocated());
                         } else {
                             Log.e("发现重复节点", "更新原节点位置");
                             Log.d("原节点信息", p.toString());
@@ -415,7 +448,8 @@ public class MainActivity extends AppCompatActivity {
                             p.setLatitude(tempPoint.getLatitude());
                             p.setLongitude(tempPoint.getLongitude());
                             p.setDate(tempPoint.getDate());
-                            p.setStatus(tempPoint.getStatus());
+                            p.setLocated(tempPoint.getLocated());
+                            p.setSafe(tempPoint.isSafe());
                         }
                         tempPoint = null;
                         break;
@@ -450,7 +484,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void addMarker(){
         if(myPoint != null){
-            if (myPoint.getStatus() == Point.SAFE_UNLOCATED || myPoint.getStatus() == Point.UNSAFE_UNLOCATED){
+            if (!myPoint.getLocated()){
                 progressDialog.show();
             } else {
                 Log.e("进度条消失", "服务端节点已经获取GPS");
@@ -510,8 +544,11 @@ public class MainActivity extends AppCompatActivity {
                     ooMarker = new MarkerOptions().position(other).icon(guest_out);
                     if (other.latitude > 0 && other.longitude > 0)  unsafety++;
                 }
-                if (p.getStatus() == Point.UNSAFE_UNLOCATED || p.getStatus() == Point.SAFE_UNLOCATED){
+                if (!p.getLocated()){
                     ooMarker = new MarkerOptions().position(other).icon(guest_disappear);
+                }
+                if (!p.isSafe()) {
+                    ooMarker = new MarkerOptions().position(other).icon(guest_unsafe);
                 }
 
                 Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
@@ -530,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("安全区外", "服务端节点未连接，客户端节点已存在");
                 outOfSafetyCount.setText("0");
                 allCount.setText("" + all);
-            }else if(myPoint.getStatus() == Point.SAFE_UNLOCATED || myPoint.getStatus() == Point.UNSAFE_UNLOCATED){
+            }else if(!myPoint.getLocated()){
                 Log.d("安全区外", "服务端节点未定位，客户端节点已存在");
                 outOfSafetyCount.setText("0");
                 allCount.setText("" + (all+1));

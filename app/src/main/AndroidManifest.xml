@@ -24,6 +24,8 @@
     //使用步行AR导航，配置Camera权限
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    //振动
+    <uses-permission android:name="android.permission.VIBRATE" />
     //蓝牙权限
     <application
         android:allowBackup="true"

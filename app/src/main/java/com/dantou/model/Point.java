@@ -17,25 +17,23 @@ import java.util.Date;
  * @Description 节点bean
  */
 public class Point implements Parcelable{
-    public final static int SAFE_LOCATED = 0;
-    public final static int UNSAFE_LOCATED = 1;
-    public final static int SAFE_UNLOCATED = 2;
-    public final static int UNSAFE_UNLOCATED = 3;
     private int id;
     private double latitude;
     private double longitude;
     private Date date;
-    private int status;
+    private Boolean safe;
+    private Boolean located;
 
     public Point() {
     }
 
-    public Point(int id, double latitude, double longitude, Date date, int status) {
+    public Point(int id, double latitude, double longitude, Date date, Boolean safe, Boolean located) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.date = date;
-        this.status = status;
+        this.safe = safe;
+        this.located = located;
     }
 
     protected Point(Parcel source){
@@ -43,7 +41,8 @@ public class Point implements Parcelable{
         latitude = source.readDouble();
         longitude = source.readDouble();
         date = (Date)source.readSerializable();
-        status = source.readInt();
+        safe = source.readByte() != 0;
+        located = source.readByte() != 0;
     }
 
     public int getId() {
@@ -78,6 +77,22 @@ public class Point implements Parcelable{
         this.date = date;
     }
 
+    public Boolean isSafe() {
+        return safe;
+    }
+
+    public void setSafe(Boolean safe) {
+        this.safe = safe;
+    }
+
+    public Boolean getLocated() {
+        return located;
+    }
+
+    public void setLocated(Boolean located) {
+        this.located = located;
+    }
+
     @Override
     public String toString() {
         return "Point{" +
@@ -85,8 +100,9 @@ public class Point implements Parcelable{
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", date=" + date +
-                ", status=" + status +
-                '}' + "\n";
+                ", safe=" + safe +
+                ", located=" + located +
+                '}';
     }
 
     @Override
@@ -100,7 +116,8 @@ public class Point implements Parcelable{
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
         dest.writeSerializable(date);
-        dest.writeInt(status);
+        dest.writeByte((byte)(safe ? 1 : 0));
+        dest.writeByte((byte)(located ? 1 : 0));
     }
 
     public static final Creator<Point> CREATOR = new Creator<Point>() {
@@ -115,14 +132,6 @@ public class Point implements Parcelable{
         }
     };
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     /**
      * 数据解析
      * @param hexData
@@ -135,9 +144,10 @@ public class Point implements Parcelable{
 
             int id  = Integer.valueOf(hexData.substring(8, 12), 16);
 
+            int port = Integer.valueOf(hexData.substring(16, 18), 16);
+
             double longitude = Integer.valueOf(hexData.substring(18, 26), 16) * 0.00001;
             longitude = Double.parseDouble(decimalFormat.format(longitude));
-
             double latitude = Integer.valueOf(hexData.substring(26, 34), 16) * 0.00001;
             latitude = Double.parseDouble(decimalFormat.format(latitude));
 
@@ -154,16 +164,28 @@ public class Point implements Parcelable{
                     ":" + minute +
                     ":" + second;
 
-            int status;
+            Boolean safe, located;
             if (latitude <= 0 || longitude <= 0) {
-                status = SAFE_UNLOCATED;
+                located = false;
             }else {
-                status = SAFE_LOCATED;
+                located = true;
+            }
+
+            switch (port) {
+                case 1:
+                    safe = true;
+                    break;
+                case 2:
+                    safe = false;
+                    break;
+                default:
+                    safe = true;
+                    break;
             }
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             try {
-                return new Point(id, latitude, longitude, simpleDateFormat.parse(dateString), status);
+                return new Point(id, latitude, longitude, simpleDateFormat.parse(dateString), safe, located);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
