@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setTitle("状态");
         progressDialog.setMessage("定位中...");
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
         progressDialog.show();
 
         navigationView.setCheckedItem(R.id.nav_history);
@@ -403,9 +403,11 @@ public class MainActivity extends AppCompatActivity {
 
             Point tempPoint = Point.parse(tempString);
 
-            Log.d("剪切的节点", tempPoint.toString());
+            if (tempPoint != null) {
+                Log.d("剪切的节点", tempPoint.toString());
+            }
 
-            if (tempPoint.getId() == 1){
+            if (tempPoint != null && tempPoint.getId() == 1){
                 myPoint = tempPoint;
             } else{
                 for (Point p : otherPoints){
@@ -492,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
     private void addMarker(){
         if(myPoint != null){
             if (!myPoint.getLocated()){
-                progressDialog.show();
+                //progressDialog.show();
             } else {
                 Log.e("进度条消失", "服务端节点已经获取GPS");
                 Thread tempThread = new Thread(){
