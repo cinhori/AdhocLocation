@@ -39,9 +39,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
+            android:gravity="end"
             android:text="@string/copyright"
-            android:textSize="10sp"/>
+            android:textSize="12sp"/>
 
     </LinearLayout>
 

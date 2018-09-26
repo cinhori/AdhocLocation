@@ -27,7 +27,7 @@ public class StartPage extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        final Intent intent = new Intent(this, DeviceScanActivity.class);
+        final Intent intent = new Intent(StartPage.this, DeviceScanActivity.class);
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
