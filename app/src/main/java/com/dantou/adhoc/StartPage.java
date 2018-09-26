@@ -22,6 +22,11 @@ public class StartPage extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         final Intent intent = new Intent(this, DeviceScanActivity.class);
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
