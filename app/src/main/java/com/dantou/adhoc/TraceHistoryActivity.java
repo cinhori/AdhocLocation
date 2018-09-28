@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -15,7 +14,6 @@ import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
@@ -31,7 +29,6 @@ import com.dantou.util.MyDatabaseHelper;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,7 +42,9 @@ public class TraceHistoryActivity extends AppCompatActivity {
     private TextureMapView mapView;
     private BaiduMap baiduMap;
     private OverlayOptions ooMarker;
-    private BitmapDescriptor server;
+    private BitmapDescriptor pointMarker;
+    private BitmapDescriptor pointMarkerStart;
+    private BitmapDescriptor pointMarkerEnd;
 
     private Boolean isFirstLocate = true;
 
@@ -60,7 +59,9 @@ public class TraceHistoryActivity extends AppCompatActivity {
         mapView = findViewById(R.id.baiduMapViewHistory);
         baiduMap = mapView.getMap();
         baiduMap.setMyLocationEnabled(true);
-        server = BitmapDescriptorFactory.fromResource(R.drawable.marker_red_16);
+        pointMarker = BitmapDescriptorFactory.fromResource(R.drawable.marker_red_16);
+        pointMarkerStart = BitmapDescriptorFactory.fromResource(R.drawable.start_marker_32_2);
+        pointMarkerEnd = BitmapDescriptorFactory.fromResource(R.drawable.end_marker_32);
 
 
         dbHelper = new MyDatabaseHelper(this, MyDatabaseHelper.DB_NAME, null, 1);
@@ -116,6 +117,7 @@ public class TraceHistoryActivity extends AppCompatActivity {
         Point lastPoint = points.get(0);
         LatLng lastLatLng = CoordinateConvert.getLatLng(lastPoint);
         pointsLatLng.add(lastLatLng);
+        Boolean start = true, end = false;
 
         long retentionTime = 0L;
         for (Point point : points) {
@@ -126,7 +128,12 @@ public class TraceHistoryActivity extends AppCompatActivity {
             }
             String retentionTimeString = getRetentionTime(retentionTime);
             pointsLatLng.add(tempLatLng);
-            ooMarker = new MarkerOptions().position(lastLatLng).icon(server);
+            if (start) {
+                ooMarker = new MarkerOptions().position(lastLatLng).icon(pointMarkerStart);
+                start = false;
+            }else {
+                ooMarker = new MarkerOptions().position(lastLatLng).icon(pointMarker);
+            }
             Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
             Log.d("为从节点添加bundle", lastPoint.toString());
             Bundle bundle = new Bundle();
@@ -142,7 +149,7 @@ public class TraceHistoryActivity extends AppCompatActivity {
 
         }
 
-        ooMarker = new MarkerOptions().position(lastLatLng).icon(server);
+        ooMarker = new MarkerOptions().position(lastLatLng).icon(pointMarkerEnd);
         Marker marker = (Marker)baiduMap.addOverlay(ooMarker);
         Log.d("为最后一个节点添加bundle", lastPoint.toString());
         Bundle bundle = new Bundle();
@@ -161,7 +168,7 @@ public class TraceHistoryActivity extends AppCompatActivity {
         }
 
         if(isFirstLocate){
-            MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
+            MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(19.0f);//3-19
             baiduMap.animateMapStatus(update);
 
             update = MapStatusUpdateFactory.newLatLng(pointsLatLng.get(0));
@@ -201,7 +208,9 @@ public class TraceHistoryActivity extends AppCompatActivity {
         super.onDestroy();
         mapView.onDestroy();
         baiduMap.setMyLocationEnabled(false);
-        server.recycle();
+        pointMarker.recycle();
+        pointMarkerStart.recycle();
+        pointMarkerEnd.recycle();
     }
 
     @Override
