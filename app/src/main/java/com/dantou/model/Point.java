@@ -85,7 +85,7 @@ public class Point implements Parcelable{
         this.safe = safe;
     }
 
-    public Boolean getLocated() {
+    public Boolean isLocated() {
         return located;
     }
 

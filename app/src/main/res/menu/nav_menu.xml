@@ -7,6 +7,10 @@
             android:icon="@drawable/history_yellow_64"
             android:title="历史记录" />
         <item
+            android:id="@+id/nav_delete_all"
+            android:title="删除历史数据"
+            android:icon="@drawable/delete_yellow_64" />
+        <item
             android:id="@+id/nav_aboutus"
             android:icon="@drawable/aboutus_yellow_64"
             android:title="关于我们" />

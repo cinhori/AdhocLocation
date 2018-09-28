@@ -5,12 +5,14 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,8 +50,11 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.dantou.model.Point;
+import com.dantou.util.CoordinateConvert;
+import com.dantou.util.MyDatabaseHelper;
 import com.dantou.util.XorVerification;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+
     public static int safeDistance = 500;
 
     static long recv_cnt = 0;
@@ -87,9 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
     private StringBuilder mData;
 
-    //坐标转换
-    CoordinateConverter converter;
-
     //构建Marker图标
     BitmapDescriptor guest_in;
     BitmapDescriptor guest_out;
@@ -98,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
     BitmapDescriptor leader;
     OverlayOptions ooCircle;
     OverlayOptions ooMarker;
+
+    private MyDatabaseHelper dbHelper;
+    SimpleDateFormat simpleDateFormat;
+    SQLiteDatabase db;
 
     private ProgressDialog progressDialog;
     public Handler pdHandler = new Handler(){
@@ -190,6 +197,10 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setCancelable(true);
         progressDialog.show();
 
+        dbHelper = new MyDatabaseHelper(MainActivity.this, MyDatabaseHelper.DB_NAME, null, 1);
+        db = dbHelper.getWritableDatabase();
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
         navigationView.setCheckedItem(R.id.nav_history);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -199,6 +210,29 @@ public class MainActivity extends AppCompatActivity {
                         Intent historyIntent
                                 = new Intent(MainActivity.this, TraceHistoryActivity.class);
                         startActivity(historyIntent);
+                        break;
+                    case R.id.nav_delete_all:
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                        dialog.setTitle("清除历史");
+                        dialog.setMessage("确定要删除历史数据吗");
+                        dialog.setCancelable(false);
+                        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dbHelper.deleteAll(db);
+                                Toast.makeText(MainActivity.this, "历史数据已删除", Toast.LENGTH_LONG).show();
+                                dialog.dismiss();
+                                dialog.cancel();
+                            }
+                        });
+                        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                dialog.cancel();
+                            }
+                        });
+                        dialog.show();
                         break;
                     case R.id.nav_aboutus:
                         Intent aboutUsIntent
@@ -224,10 +258,6 @@ public class MainActivity extends AppCompatActivity {
         guest_disappear = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_blue_32);
         guest_unsafe = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_yellow_48);
         leader = BitmapDescriptorFactory.fromResource(R.drawable.leader_48);
-
-        //转换工具初始化
-        converter = new CoordinateConverter();
-        converter.from(CoordinateConverter.CoordType.GPS);
 
         getPermission();
 
@@ -409,6 +439,19 @@ public class MainActivity extends AppCompatActivity {
 
             if (tempPoint != null && tempPoint.getId() == 1){
                 myPoint = tempPoint;
+
+                //如果已经定位，将数据保存到数据库中
+                if (myPoint.isLocated()){
+                    ContentValues values = new ContentValues();
+                    //组装数据
+                    values.put("user_id", 1);
+                    values.put("latitude", myPoint.getLatitude());
+                    values.put("longitude", myPoint.getLongitude());
+                    values.put("date", simpleDateFormat.format(myPoint.getDate()));
+                    values.put("safe", myPoint.isSafe() ? 1: 0);
+                    values.put("located", myPoint.isLocated() ? 1: 0);
+                    dbHelper.insert(db, values);
+                }
             } else{
                 for (Point p : otherPoints){
                     if (p.getId() == tempPoint.getId()){
@@ -416,9 +459,9 @@ public class MainActivity extends AppCompatActivity {
                             notify(tempPoint);
                         }
 
-                        if(!tempPoint.getLocated()) {
+                        if(!tempPoint.isLocated()) {
                             Log.e("节点位置消失", "改变状态");
-                            p.setLocated(tempPoint.getLocated());
+                            p.setLocated(tempPoint.isLocated());
                         } else {
                             Log.e("发现重复节点", "更新原节点位置");
                             Log.d("原节点信息", p.toString());
@@ -426,7 +469,7 @@ public class MainActivity extends AppCompatActivity {
                             p.setLatitude(tempPoint.getLatitude());
                             p.setLongitude(tempPoint.getLongitude());
                             p.setDate(tempPoint.getDate());
-                            p.setLocated(tempPoint.getLocated());
+                            p.setLocated(tempPoint.isLocated());
                             p.setSafe(tempPoint.isSafe());
                         }
                         tempPoint = null;
@@ -493,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void addMarker(){
         if(myPoint != null){
-            if (!myPoint.getLocated()){
+            if (!myPoint.isLocated()){
                 //progressDialog.show();
             } else {
                 Log.e("进度条消失", "服务端节点已经获取GPS");
@@ -506,8 +549,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 tempThread.start();
-                converter.coord(new LatLng(myPoint.getLatitude(), myPoint.getLongitude()));
-                myLatLong = converter.convert();
+                //将GPS信息转换成百度地图中的经纬度坐标
+                myLatLong = CoordinateConvert.getLatLng(myPoint);
                 Log.d("获得在BaiduMap中的地址",
                         "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
 
@@ -542,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
         if(otherPoints != null){
             int all = otherPoints.size();
             for(Point p : otherPoints){
-                LatLng other = converter.coord(new LatLng(p.getLatitude(), p.getLongitude())).convert();
+                LatLng other = CoordinateConvert.getLatLng(p);
                 //将其他节点显示在地图上
                 //ooDot = new DotOptions().center(other).radius(15).color(Color.RED);//红色，从Color类中获取
                 double distance = DistanceUtil.getDistance(other, myLatLong);
@@ -553,7 +596,7 @@ public class MainActivity extends AppCompatActivity {
                     ooMarker = new MarkerOptions().position(other).icon(guest_out);
                     if (other.latitude > 0 && other.longitude > 0)  unsafety++;
                 }
-                if (!p.getLocated()){
+                if (!p.isLocated()){
                     ooMarker = new MarkerOptions().position(other).icon(guest_disappear);
                 }
                 if (!p.isSafe()) {
@@ -576,7 +619,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("安全区外", "服务端节点未连接，客户端节点已存在");
                 outOfSafetyCount.setText("0");
                 allCount.setText("" + all);
-            }else if(!myPoint.getLocated()){
+            }else if(!myPoint.isLocated()){
                 Log.d("安全区外", "服务端节点未定位，客户端节点已存在");
                 outOfSafetyCount.setText("0");
                 allCount.setText("" + (all+1));
