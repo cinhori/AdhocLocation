@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TraceHistoryActivity extends AppCompatActivity {
-    public static final int HISTORY_DISTANCE = 5;
+    public static final int HISTORY_DISTANCE = 20;
 
     private MyDatabaseHelper dbHelper;
     private SQLiteDatabase db;
@@ -60,7 +60,7 @@ public class TraceHistoryActivity extends AppCompatActivity {
         mapView = findViewById(R.id.baiduMapViewHistory);
         baiduMap = mapView.getMap();
         baiduMap.setMyLocationEnabled(true);
-        server = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_green_32);
+        server = BitmapDescriptorFactory.fromResource(R.drawable.marker_red_16);
 
 
         dbHelper = new MyDatabaseHelper(this, MyDatabaseHelper.DB_NAME, null, 1);
@@ -172,7 +172,7 @@ public class TraceHistoryActivity extends AppCompatActivity {
         if (pointsLatLng.size() < 2) {
             Toast.makeText(TraceHistoryActivity.this, "采集的数据太少，不能绘制轨迹", Toast.LENGTH_SHORT).show();
         }else {
-            OverlayOptions ooPolyline = new PolylineOptions().width(10).color(Color.RED).points(pointsLatLng);
+            OverlayOptions ooPolyline = new PolylineOptions().width(10).color(Color.GREEN).points(pointsLatLng);
             Polyline mPolyline = (Polyline) baiduMap.addOverlay(ooPolyline);
         }
 
