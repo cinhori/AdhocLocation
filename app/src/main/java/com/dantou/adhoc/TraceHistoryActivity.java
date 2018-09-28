@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TraceHistoryActivity extends AppCompatActivity {
-    public static final int HISTORY_DISTANCE = 20;
+    public static final int HISTORY_DISTANCE = 50; //历史记录采样点间距50m
 
     private MyDatabaseHelper dbHelper;
     private SQLiteDatabase db;
@@ -123,7 +123,7 @@ public class TraceHistoryActivity extends AppCompatActivity {
         for (Point point : points) {
             LatLng tempLatLng = CoordinateConvert.getLatLng(point);
             if (DistanceUtil.getDistance(lastLatLng, tempLatLng) < HISTORY_DISTANCE) {
-                retentionTime += point.getDate().getTime() - lastPoint.getDate().getTime();
+                retentionTime = point.getDate().getTime() - lastPoint.getDate().getTime();
                 continue;
             }
             String retentionTimeString = getRetentionTime(retentionTime);
