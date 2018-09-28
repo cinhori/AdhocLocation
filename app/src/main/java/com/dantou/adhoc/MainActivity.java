@@ -56,6 +56,8 @@ import com.dantou.util.XorVerification;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     public static int safeDistance = 500;
+    public static final int LIVE_INTERVAL = 60 * 5; //节点在60s * 5没有接收到新消息则删除
 
     static long recv_cnt = 0;
 
@@ -398,6 +401,16 @@ public class MainActivity extends AppCompatActivity {
         cut(mData);
 
         baiduMap.clear();
+
+        //清除过期节点
+        for (Iterator<Point> pointIterator = otherPoints.iterator(); pointIterator.hasNext();) {
+            Point temp = pointIterator.next();
+            if ((new Date().getTime() - temp.getDate().getTime()) >= LIVE_INTERVAL * 1000) {
+                pointIterator.remove();
+                Log.d("当前时间", new Date().toString());
+                Log.e("清除过期节点", temp.toString());
+            }
+        }
 
         addMarker();
 
