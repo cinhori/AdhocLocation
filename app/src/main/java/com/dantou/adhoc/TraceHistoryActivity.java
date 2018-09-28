@@ -136,6 +136,7 @@ public class TraceHistoryActivity extends AppCompatActivity {
                     + ";\n停留时间：" + retentionTimeString);
             marker.setExtraInfo(bundle);
 
+            lastPoint = point;
             lastLatLng = tempLatLng;
             retentionTime = 0L;
 
