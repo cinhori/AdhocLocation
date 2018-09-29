@@ -54,6 +54,7 @@ import com.dantou.util.CoordinateConvert;
 import com.dantou.util.MyDatabaseHelper;
 import com.dantou.util.XorVerification;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -108,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
     private MyDatabaseHelper dbHelper;
     SimpleDateFormat simpleDateFormat;
     SQLiteDatabase db;
+
+    private DecimalFormat df;
 
     private ProgressDialog progressDialog;
     public Handler pdHandler = new Handler(){
@@ -185,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        df = new DecimalFormat("#.0000");
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -587,8 +592,8 @@ public class MainActivity extends AppCompatActivity {
                 Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
                 Log.d("为从节点添加bundle", myPoint.toString());
                 Bundle bundle = new Bundle();
-                bundle.putString("info", "节点ID为1"
-                        + ";\n经度：" + myLatLong.longitude + ";\n纬度：" + myLatLong.latitude);
+                bundle.putString("info", "\n节点ID为1"
+                        + "\n经度：" + df.format(myLatLong.longitude) + "\n纬度：" + df.format(myLatLong.latitude));
                 leaderMarker.setExtraInfo(bundle);
             }
 
@@ -620,11 +625,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("为从节点添加bundle", p.toString());
                 Bundle bundle = new Bundle();
                 if (myLatLong.longitude <= 0 || myLatLong.latitude <= 0){
-                    bundle.putString("info", "ID" + p.getId()
-                            + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude);
+                    bundle.putString("info", "\n节点ID为" + p.getId()
+                            + "\n经度：" + df.format(other.longitude)
+                            + "\n纬度：" + df.format(other.latitude));
                 } else {
-                    bundle.putString("info", "ID" + p.getId()
-                            + ";\n经度：" + other.longitude + ";\n纬度：" + other.latitude + ";\n距离：" + distance);
+                    bundle.putString("info", "\n节点ID为" + p.getId()
+                            + "\n经度：" + df.format(other.longitude)
+                            + "\n纬度：" + df.format(other.latitude)
+                            + "\n距离：" + df.format(distance));
                 }
                 marker.setExtraInfo(bundle);
             }
