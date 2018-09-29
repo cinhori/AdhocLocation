@@ -138,9 +138,9 @@ public class TraceHistoryActivity extends AppCompatActivity {
             Log.d("为从节点添加bundle", lastPoint.toString());
             Bundle bundle = new Bundle();
             bundle.putString("info", "\n经度：" + df.format(lastLatLng.longitude)
-                    + ";\n纬度：" + df.format(lastLatLng.latitude)
-                    + ";\n开始时间：" + simpleDateFormat.format(lastPoint.getDate())
-                    + ";\n停留时间：" + retentionTimeString);
+                    + "\n纬度：" + df.format(lastLatLng.latitude)
+                    + "\n开始时间：" + simpleDateFormat.format(lastPoint.getDate())
+                    + "\n停留时间：" + retentionTimeString);
             marker.setExtraInfo(bundle);
 
             lastPoint = point;
@@ -154,16 +154,16 @@ public class TraceHistoryActivity extends AppCompatActivity {
         Log.d("为最后一个节点添加bundle", lastPoint.toString());
         Bundle bundle = new Bundle();
         if (retentionTime == 0L) {
-            bundle.putString("info", "经度：" + df.format(lastLatLng.longitude)
-                    + ";\n纬度：" + df.format(lastLatLng.latitude)
-                    + ";\n开始时间：" + simpleDateFormat.format(lastPoint.getDate())
-                    + ";\n停留时间：0s");
+            bundle.putString("info", "\n经度：" + df.format(lastLatLng.longitude)
+                    + "\n纬度：" + df.format(lastLatLng.latitude)
+                    + "\n开始时间：" + simpleDateFormat.format(lastPoint.getDate())
+                    + "\n停留时间：0s");
             marker.setExtraInfo(bundle);
         }else {
-            bundle.putString("info", "经度：" + df.format(lastLatLng.longitude)
-                    + ";\n纬度：" + df.format(lastLatLng.latitude)
-                    + ";\n开始时间：" + simpleDateFormat.format(lastPoint.getDate())
-                    + ";\n停留时间：" + getRetentionTime(retentionTime));
+            bundle.putString("info", "\n经度：" + df.format(lastLatLng.longitude)
+                    + "\n纬度：" + df.format(lastLatLng.latitude)
+                    + "\n开始时间：" + simpleDateFormat.format(lastPoint.getDate())
+                    + "\n停留时间：" + getRetentionTime(retentionTime));
             marker.setExtraInfo(bundle);
         }
 
@@ -190,15 +190,15 @@ public class TraceHistoryActivity extends AppCompatActivity {
         String retentionTime = "";
         long retentionSeconds = retentionMilliseconds / 1000;
         if (retentionSeconds >= 3600) {
-            retentionTime += (retentionSeconds / 3600) + "小时";
+            retentionTime += (retentionSeconds / 3600) + "h";
             retentionSeconds %= 3600;
         }
         if (retentionSeconds >= 60) {
-            retentionTime += (retentionSeconds / 60) + "分钟";
+            retentionTime += (retentionSeconds / 60) + "m";
             retentionSeconds %= 60;
         }
         if (retentionSeconds >= 0) {
-            retentionTime += retentionSeconds + "秒";
+            retentionTime += retentionSeconds + "s";
         }
         return retentionTime;
     }
