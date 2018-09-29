@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     static long recv_cnt = 0;
 
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
     private MapView mapView;
 
     private BaiduMap baiduMap;
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         df = new DecimalFormat("#.0000");
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -717,6 +718,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             default:
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(navigationView)){
+            drawerLayout.closeDrawers();
+        }else {
+            super.onBackPressed();
         }
     }
 }
