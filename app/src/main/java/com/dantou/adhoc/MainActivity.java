@@ -47,7 +47,6 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.dantou.model.Point;
 import com.dantou.util.CoordinateConvert;
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext());
-        setContentView(R.layout.ble_spp);
+        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
