@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
     BitmapDescriptor guest_disappear;
     BitmapDescriptor guest_unsafe;
     BitmapDescriptor leader;
+    BitmapDescriptor leader_dark;
     OverlayOptions ooCircle;
     OverlayOptions ooMarker;
 
@@ -266,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
         guest_disappear = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_blue_32);
         guest_unsafe = BitmapDescriptorFactory.fromResource(R.drawable.guest_2_yellow_48);
         leader = BitmapDescriptorFactory.fromResource(R.drawable.leader_48);
+        leader_dark = BitmapDescriptorFactory.fromResource(R.drawable.leader_48_dark);
 
         getPermission();
 
@@ -456,19 +458,25 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (tempPoint != null && tempPoint.getId() == 1){
-                myPoint = tempPoint;
+                if (!tempPoint.isLocated() && myPoint != null){
+                    myPoint.setLocated(false);
+                    myPoint.setDate(tempPoint.getDate());
+                    myPoint.setSafe(tempPoint.isSafe());
+                }else {
+                    myPoint = tempPoint;
 
-                //如果已经定位，将数据保存到数据库中
-                if (myPoint.isLocated()){
-                    ContentValues values = new ContentValues();
-                    //组装数据
-                    values.put("user_id", 1);
-                    values.put("latitude", myPoint.getLatitude());
-                    values.put("longitude", myPoint.getLongitude());
-                    values.put("date", simpleDateFormat.format(myPoint.getDate()));
-                    values.put("safe", myPoint.isSafe() ? 1: 0);
-                    values.put("located", myPoint.isLocated() ? 1: 0);
-                    dbHelper.insert(db, values);
+                    //如果已经定位，将数据保存到数据库中
+                    if (myPoint.isLocated()){
+                        ContentValues values = new ContentValues();
+                        //组装数据
+                        values.put("user_id", 1);
+                        values.put("latitude", myPoint.getLatitude());
+                        values.put("longitude", myPoint.getLongitude());
+                        values.put("date", simpleDateFormat.format(myPoint.getDate()));
+                        values.put("safe", myPoint.isSafe() ? 1 : 0);
+                        values.put("located", myPoint.isLocated() ? 1 : 0);
+                        dbHelper.insert(db, values);
+                    }
                 }
             } else{
                 for (Point p : otherPoints){
@@ -555,10 +563,10 @@ public class MainActivity extends AppCompatActivity {
     private void addMarker(){
         if(myPoint != null){
             if (!myPoint.isLocated()){
-                //progressDialog.show();
+
             } else {
                 Log.e("进度条消失", "服务端节点已经获取GPS");
-                Thread tempThread = new Thread(){
+                Thread tempThread = new Thread() {
                     @Override
                     public void run() {
                         Message message = new Message();
@@ -567,36 +575,41 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 tempThread.start();
-                //将GPS信息转换成百度地图中的经纬度坐标
-                myLatLong = CoordinateConvert.getLatLng(myPoint);
-                Log.d("获得在BaiduMap中的地址",
-                        "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
-
-                if(isFirstLocate){
-                    MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
-                    baiduMap.animateMapStatus(update);
-
-                    update = MapStatusUpdateFactory.newLatLng(myLatLong);
-                    baiduMap.animateMapStatus(update);
-
-                    isFirstLocate = false;
-                }
-
-                //画圆
-                ooCircle = new CircleOptions().center(myLatLong).fillColor(0x00FF0000)
-                        .radius(safeDistance).stroke(new Stroke(3, Color.RED));
-                Log.d("画圆", "半径" + safeDistance + "，透明度1，颜色无");
-                baiduMap.addOverlay(ooCircle);
-
-                ooMarker = new MarkerOptions().position(myLatLong).icon(leader);
-                Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
-                Log.d("为从节点添加bundle", myPoint.toString());
-                Bundle bundle = new Bundle();
-                bundle.putString("info", "\n节点ID为1"
-                        + "\n经度：" + df.format(myLatLong.longitude) + "\n纬度：" + df.format(myLatLong.latitude));
-                leaderMarker.setExtraInfo(bundle);
             }
 
+            //将GPS信息转换成百度地图中的经纬度坐标
+            myLatLong = CoordinateConvert.getLatLng(myPoint);
+            Log.d("获得在BaiduMap中的地址",
+                    "latitude:" + myLatLong.latitude + "longitude:" + myLatLong.longitude);
+
+            if(isFirstLocate && myPoint.isLocated()){
+                MapStatusUpdate update = MapStatusUpdateFactory.zoomTo(18.0f);//3-19
+                baiduMap.animateMapStatus(update);
+
+                update = MapStatusUpdateFactory.newLatLng(myLatLong);
+                baiduMap.animateMapStatus(update);
+
+                isFirstLocate = false;
+            }
+
+            //画圆
+            ooCircle = new CircleOptions().center(myLatLong).fillColor(0x00FF0000)
+                    .radius(safeDistance).stroke(new Stroke(3, Color.RED));
+            Log.d("画圆", "半径" + safeDistance + "，透明度1，颜色无");
+            baiduMap.addOverlay(ooCircle);
+
+            Bundle bundle = new Bundle();
+            if (myPoint.isLocated()) {
+                ooMarker = new MarkerOptions().position(myLatLong).icon(leader);
+                bundle.putString("info", "\n节点ID为1"
+                        + "\n经度：" + df.format(myLatLong.longitude) + "\n纬度：" + df.format(myLatLong.latitude));
+            }else {
+                ooMarker = new MarkerOptions().position(myLatLong).icon(leader_dark);
+                bundle.putString("info", "\n节点ID为1" + "\n中心节点未定位！");
+            }
+            Marker leaderMarker = (Marker) baiduMap.addOverlay(ooMarker);
+            Log.d("为从节点添加bundle", myPoint.toString());
+            leaderMarker.setExtraInfo(bundle);
         }
 
         int unsafety = 0;
