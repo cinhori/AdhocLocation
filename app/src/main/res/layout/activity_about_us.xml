@@ -19,7 +19,7 @@
         android:id="@+id/aboutus_textview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/aboutus_text"
+        android:text="@string/copyright"
         android:textSize="@dimen/large_text_size"/>
 
 </LinearLayout>
